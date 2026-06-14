@@ -77,7 +77,29 @@
 
   // -------------------------------------------------------------- intro
 
+  // One entry per person (per browser). Not bulletproof — a different
+  // browser/device or cleared storage can retake — but it stops casual repeats.
+  const DONE_KEY = 'nssaac_completed';
+
+  function alreadyDone() {
+    try { return !!localStorage.getItem(DONE_KEY); } catch (e) { return false; }
+  }
+  function markDone() {
+    try { localStorage.setItem(DONE_KEY, new Date().toISOString()); } catch (e) {}
+  }
+
   async function init() {
+    // Escape hatch for testing: visiting with ?reset clears the one-chance lock.
+    if (/[?&]reset\b/.test(window.location.search)) {
+      try { localStorage.removeItem(DONE_KEY); } catch (e) {}
+    }
+
+    // If this browser already completed the study, don't let them retake.
+    if (alreadyDone()) {
+      showScreen('screen-already');
+      return;
+    }
+
     // wire slider outputs
     bindSlider('selfRatedAbility', 'selfRatedAbility-out');
 
@@ -95,7 +117,6 @@
     } catch (e) { /* non-fatal */ }
 
     $('#demographics-form').addEventListener('submit', onDemographicsSubmit);
-    $('#restart-btn').addEventListener('click', () => window.location.reload());
   }
 
   function bindSlider(inputId, outId) {
@@ -393,6 +414,7 @@
     }
 
     if (result && result.ok && result.score) {
+      markDone(); // lock out retakes once the data is safely saved
       $('#score-num').textContent = result.score.correct;
       $('#score-total').textContent = result.score.total;
       $('#score-card').hidden = false;
