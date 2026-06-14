@@ -1,0 +1,28 @@
+# Render Blueprint — one-click-ish deploy for the "Real, or Rendered?" study.
+# In the Render dashboard: New ▸ Blueprint ▸ pick this repo. Render reads this
+# file and creates the service. Then set SHEET_WEBHOOK_URL (and optionally
+# SHEET_SHARED_SECRET) under the service's Environment tab.
+#
+# Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: nssaac
+    runtime: node
+    plan: free
+    # If your code is on a branch other than this, change it in the dashboard
+    # or here. (This repo's code currently lives on a feature branch.)
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /api/status
+    envVars:
+      - key: PHOTOS_PER_SESSION
+        value: "20"
+      # Set these two in the Render dashboard (don't commit secrets here):
+      #   SHEET_WEBHOOK_URL    -> the Apps Script web app URL (ends in /exec)
+      #   SHEET_SHARED_SECRET  -> must match SHARED_SECRET in the Apps Script
+      - key: SHEET_WEBHOOK_URL
+        sync: false
+      - key: SHEET_SHARED_SECRET
+        sync: false

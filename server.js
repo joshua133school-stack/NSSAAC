@@ -31,12 +31,20 @@ const PHOTOS_PER_SESSION = parseInt(process.env.PHOTOS_PER_SESSION || '20', 10);
 // Set ADMIN_KEY in the environment to enable it.
 const ADMIN_KEY = process.env.ADMIN_KEY || '';
 
+// Google Sheet integration. When SHEET_WEBHOOK_URL is set, every submission is
+// sent to a Google Apps Script web app that appends it to your spreadsheet.
+// This is the primary, permanent store when hosting on Render's free tier
+// (whose local disk is wiped on restart). SHEET_SHARED_SECRET, if set here,
+// must match the SHARED_SECRET in the Apps Script.
+const SHEET_WEBHOOK_URL = process.env.SHEET_WEBHOOK_URL || '';
+const SHEET_SHARED_SECRET = process.env.SHEET_SHARED_SECRET || '';
+
 const PHOTO_DIRS = {
   ai: path.join(__dirname, 'photos', 'ai'),
   real: path.join(__dirname, 'photos', 'real'),
 };
 
-const DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const CSV_PATH = path.join(DATA_DIR, 'results.csv');
 const JSON_PATH = path.join(DATA_DIR, 'results.json');
 
@@ -120,7 +128,7 @@ function csvEscape(value) {
 }
 
 // One row per (participant x photo) so the data is "tidy" for analysis.
-const CSV_HEADER = [
+const CSV_COLUMNS = [
   'submission_id',
   'timestamp',
   'age',
@@ -144,7 +152,8 @@ const CSV_HEADER = [
   'confidence',
   'reason_tags',
   'reason_text',
-].join(',');
+];
+const CSV_HEADER = CSV_COLUMNS.join(',');
 
 function appendCsv(rows) {
   const needHeader = !fs.existsSync(CSV_PATH) || fs.statSync(CSV_PATH).size === 0;
@@ -163,6 +172,35 @@ function appendJson(record) {
   }
   all.push(record);
   fs.writeFileSync(JSON_PATH, JSON.stringify(all, null, 2), 'utf8');
+}
+
+/**
+ * Send the flattened rows to a Google Sheet via an Apps Script web app.
+ * Resolves on success, throws on any failure so the caller can react.
+ */
+async function sendToSheet(columns, rows) {
+  const res = await fetch(SHEET_WEBHOOK_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // Apps Script web apps don't enforce CORS for server-to-server calls,
+    // and redirect on success — follow it to read the result.
+    redirect: 'follow',
+    body: JSON.stringify({
+      secret: SHEET_SHARED_SECRET,
+      columns,
+      rows,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`Sheet webhook returned HTTP ${res.status}`);
+  }
+  const text = await res.text();
+  // The Apps Script returns {"ok":true}; treat anything else as a failure.
+  let parsed;
+  try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
+  if (!parsed || parsed.ok !== true) {
+    throw new Error(`Sheet webhook did not confirm success: ${text.slice(0, 200)}`);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -201,7 +239,7 @@ app.get('/api/status', (req, res) => {
 });
 
 // Receive a completed survey.
-app.post('/api/submit', (req, res) => {
+app.post('/api/submit', async (req, res) => {
   const body = req.body || {};
   const demo = body.demographics || {};
   const responses = Array.isArray(body.responses) ? body.responses : [];
@@ -246,11 +284,28 @@ app.post('/api/submit', (req, res) => {
     ];
   });
 
+  // Best-effort local backup. On hosts with an ephemeral disk (e.g. Render's
+  // free tier) this may not persist, which is fine — the Google Sheet is the
+  // source of truth. So we never fail the request just because disk writes did.
+  let localSaved = false;
   try {
     appendCsv(rows);
     appendJson({ submissionId, timestamp, demographics: demo, responses });
+    localSaved = true;
   } catch (err) {
-    console.error('Failed to save submission:', err);
+    console.warn('Local backup write failed (continuing):', err.message);
+  }
+
+  // Primary store: the Google Sheet, when configured.
+  if (SHEET_WEBHOOK_URL) {
+    try {
+      await sendToSheet(CSV_COLUMNS, rows);
+    } catch (err) {
+      console.error('Failed to send submission to Google Sheet:', err.message);
+      return res.status(502).json({ ok: false, error: 'Could not save response.' });
+    }
+  } else if (!localSaved) {
+    // No Sheet configured and the disk write failed — nothing was saved.
     return res.status(500).json({ ok: false, error: 'Could not save response.' });
   }
 
@@ -283,5 +338,10 @@ app.listen(PORT, () => {
   if (ai + real < PHOTOS_PER_SESSION) {
     console.log(`  ⚠  Add more images to photos/ai and photos/real (need ~${PHOTOS_PER_SESSION}).`);
   }
-  console.log(`  Results -> ${path.relative(__dirname, CSV_PATH)}\n`);
+  if (SHEET_WEBHOOK_URL) {
+    console.log('  Results -> Google Sheet (webhook configured) + local backup');
+  } else {
+    console.log(`  Results -> ${path.relative(__dirname, CSV_PATH)} (local only — set SHEET_WEBHOOK_URL to use a Google Sheet)`);
+  }
+  console.log('');
 });
