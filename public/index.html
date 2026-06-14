@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Real or Rendered — A study in machine-made images</title>
+  <meta name="description" content="A statistics study exploring whether people can tell AI-generated images from real photographs." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- Animated art-installation background -->
+  <div class="backdrop" aria-hidden="true">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <span class="grain"></span>
+  </div>
+
+  <main id="app">
+
+    <!-- ───────────────────────── Intro ───────────────────────── -->
+    <section class="screen is-active" id="screen-intro">
+      <div class="screen-inner narrow">
+        <p class="eyebrow" data-stagger>A statistics study</p>
+        <h1 class="display" data-stagger>Real, or rendered?</h1>
+        <p class="lede" data-stagger>
+          Machines now make images that look like memories. We are gathering data on
+          a simple question: <em>can people still tell the difference?</em>
+        </p>
+        <p class="muted" data-stagger>
+          You will answer a few questions about yourself, then look at about
+          <strong id="intro-count">20</strong> images one at a time and decide,
+          for each, whether it was made by a camera or by a machine. It takes
+          around five minutes. Your responses are anonymous.
+        </p>
+        <button class="btn primary" id="start-btn" data-stagger>Begin</button>
+        <p class="fineprint" data-stagger>No personal identifiers are collected. Data is used for a school statistics project.</p>
+      </div>
+    </section>
+
+    <!-- ─────────────────────── Demographics ─────────────────────── -->
+    <section class="screen" id="screen-demographics">
+      <div class="screen-inner">
+        <p class="eyebrow">Part one</p>
+        <h2 class="title">A little about you</h2>
+        <p class="muted">These help us understand the patterns in the results. Answer what you're comfortable with — only age and gender are required.</p>
+
+        <form id="demographics-form" class="form" novalidate>
+          <div class="field">
+            <label for="age">Age <span class="req">*</span></label>
+            <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />
+          </div>
+
+          <div class="field">
+            <label for="gender">Gender <span class="req">*</span></label>
+            <select id="gender" name="gender" required>
+              <option value="" disabled selected>Select…</option>
+              <option>Woman</option>
+              <option>Man</option>
+              <option>Non-binary</option>
+              <option>Prefer to self-describe</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="education">Highest level of education</label>
+            <select id="education" name="education">
+              <option value="" disabled selected>Select…</option>
+              <option>Still in school</option>
+              <option>High school / secondary</option>
+              <option>Some college / diploma</option>
+              <option>Bachelor's degree</option>
+              <option>Master's degree</option>
+              <option>Doctorate or higher</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="country">Country / region</label>
+            <input type="text" id="country" name="country" placeholder="e.g. Namibia" autocomplete="country-name" />
+          </div>
+
+          <div class="field">
+            <label for="occupationField">Field of work or study</label>
+            <select id="occupationField" name="occupationField">
+              <option value="" disabled selected>Select…</option>
+              <option>Arts, design or media</option>
+              <option>Technology / computing</option>
+              <option>Science, engineering or maths</option>
+              <option>Business or finance</option>
+              <option>Health or medicine</option>
+              <option>Education</option>
+              <option>Trades or services</option>
+              <option>Student (general)</option>
+              <option>Other</option>
+              <option>Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="nativeEnglish">Is English your first language?</label>
+            <select id="nativeEnglish" name="nativeEnglish">
+              <option value="" disabled selected>Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <hr class="divider" />
+          <p class="subhead">Your experience with AI</p>
+
+          <div class="field">
+            <label for="aiUsedBefore">Have you used AI tools before?</label>
+            <select id="aiUsedBefore" name="aiUsedBefore">
+              <option value="" disabled selected>Select…</option>
+              <option>Yes, often</option>
+              <option>Yes, occasionally</option>
+              <option>Once or twice</option>
+              <option>Never</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="aiUseFrequency">How often do you use AI tools?</label>
+            <select id="aiUseFrequency" name="aiUseFrequency">
+              <option value="" disabled selected>Select…</option>
+              <option>Daily</option>
+              <option>Weekly</option>
+              <option>Monthly</option>
+              <option>Rarely</option>
+              <option>Never</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label>Which kinds of AI tools have you used? <span class="hint">(select all that apply)</span></label>
+            <div class="checks" id="aiTypesUsed">
+              <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span>Text / chatbots</span></label>
+              <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span>Image generation</span></label>
+              <label class="check"><input type="checkbox" value="Photo editing / filters" /><span>Photo editing / filters</span></label>
+              <label class="check"><input type="checkbox" value="Voice / music" /><span>Voice / music</span></label>
+              <label class="check"><input type="checkbox" value="Video generation" /><span>Video generation</span></label>
+              <label class="check"><input type="checkbox" value="Coding assistants" /><span>Coding assistants</span></label>
+              <label class="check"><input type="checkbox" value="None" /><span>None</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="imageAiExperience">How familiar are you with AI-generated <em>images</em> specifically?</label>
+            <select id="imageAiExperience" name="imageAiExperience">
+              <option value="" disabled selected>Select…</option>
+              <option>Very familiar — I make them</option>
+              <option>Somewhat — I've seen many</option>
+              <option>A little</option>
+              <option>Not at all</option>
+            </select>
+          </div>
+
+          <div class="field full">
+            <label for="selfRatedAbility">How good do you think you are at spotting AI images? <span class="hint">(1 = no idea, 10 = expert)</span></label>
+            <div class="slider-wrap">
+              <input type="range" id="selfRatedAbility" name="selfRatedAbility" min="1" max="10" value="5" />
+              <output id="selfRatedAbility-out">5</output>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="visionCorrected">Are you viewing this with corrected vision (glasses/contacts) if you need it?</label>
+            <select id="visionCorrected" name="visionCorrected">
+              <option value="" disabled selected>Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>I don't need correction</option>
+            </select>
+          </div>
+
+          <p class="form-error" id="demographics-error" hidden></p>
+
+          <button type="submit" class="btn primary">Continue to the images</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Quiz ───────────────────────── -->
+    <section class="screen" id="screen-quiz">
+      <div class="quiz-progress">
+        <span id="quiz-counter">1 / 20</span>
+        <div class="bar"><div class="bar-fill" id="quiz-bar"></div></div>
+      </div>
+
+      <div class="quiz-stage">
+        <figure class="photo-frame" id="photo-frame">
+          <img id="quiz-image" alt="Image to assess" />
+        </figure>
+
+        <div class="quiz-panel" id="quiz-panel">
+          <p class="quiz-question">Made by a camera, or by a machine?</p>
+
+          <div class="choice-row">
+            <button class="choice" data-guess="real">
+              <span class="choice-label">A real photograph</span>
+            </button>
+            <button class="choice" data-guess="ai">
+              <span class="choice-label">AI-generated</span>
+            </button>
+          </div>
+
+          <div class="followup" id="followup" hidden>
+            <div class="field full">
+              <label>How sure are you? <span class="hint">(1 = guessing, 10 = certain)</span></label>
+              <div class="slider-wrap">
+                <input type="range" id="confidence" min="1" max="10" value="5" />
+                <output id="confidence-out">5</output>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>What made you decide that? <span class="hint">(select any)</span></label>
+              <div class="chips" id="reason-tags">
+                <button type="button" class="chip" data-tag="Lighting / shadows">Lighting / shadows</button>
+                <button type="button" class="chip" data-tag="Skin / faces">Skin / faces</button>
+                <button type="button" class="chip" data-tag="Hands / fingers">Hands / fingers</button>
+                <button type="button" class="chip" data-tag="Eyes / teeth">Eyes / teeth</button>
+                <button type="button" class="chip" data-tag="Text / writing">Text / writing</button>
+                <button type="button" class="chip" data-tag="Background details">Background details</button>
+                <button type="button" class="chip" data-tag="Textures / patterns">Textures / patterns</button>
+                <button type="button" class="chip" data-tag="Looks too perfect">Looks too perfect</button>
+                <button type="button" class="chip" data-tag="Looks too real">Looks too real</button>
+                <button type="button" class="chip" data-tag="Weird artifacts">Weird artifacts</button>
+                <button type="button" class="chip" data-tag="Composition / framing">Composition / framing</button>
+                <button type="button" class="chip" data-tag="Just a feeling">Just a feeling</button>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label for="reasonText">Anything else about <em>this</em> image? <span class="hint">(optional)</span></label>
+              <textarea id="reasonText" rows="2" placeholder="In a few words…"></textarea>
+            </div>
+
+            <button class="btn primary" id="next-btn">Next image</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────────────────── Done ───────────────────────── -->
+    <section class="screen" id="screen-done">
+      <div class="screen-inner narrow center">
+        <p class="eyebrow" data-stagger>That's everything</p>
+        <h2 class="display small" data-stagger>Thank you.</h2>
+        <p class="lede" id="done-message" data-stagger>Your responses have been recorded.</p>
+        <div class="score-card" id="score-card" hidden>
+          <span class="score-num" id="score-num">—</span>
+          <span class="score-cap">correct out of <span id="score-total">—</span></span>
+        </div>
+        <p class="muted" id="reveal-note" data-stagger>
+          The results are pooled anonymously for analysis. Feel free to share the
+          study with others — every response makes the data stronger.
+        </p>
+        <button class="btn ghost" id="restart-btn" data-stagger>Take it again</button>
+      </div>
+    </section>
+
+    <!-- Empty-state fallback when no photos are installed -->
+    <section class="screen" id="screen-empty">
+      <div class="screen-inner narrow center">
+        <h2 class="title">No images yet</h2>
+        <p class="muted">
+          Add some pictures to <code>photos/ai/</code> and <code>photos/real/</code>,
+          then refresh. See the project README for details.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>
