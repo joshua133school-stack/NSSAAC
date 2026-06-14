@@ -27,6 +27,28 @@ photos/real/   ← real (camera) photographs
 You can keep the `README.md` files that are already in those folders — the
 server ignores non-image files.
 
+### Need real photos fast? Pull them from Pexels
+
+Pexels prohibits AI-generated uploads, so it's a good source for the **real**
+side. A helper script downloads a diverse, subject-spread batch straight into
+`photos/real/`:
+
+1. Get a free API key at <https://www.pexels.com/api/>.
+2. Run:
+   ```bash
+   PEXELS_API_KEY=your_key_here npm run fetch:real
+   # options: COUNT (default 40), TOPICS, SIZE
+   PEXELS_API_KEY=key COUNT=30 TOPICS="portrait,food,city,dog" npm run fetch:real
+   ```
+
+It also writes `photos/real/_pexels_credits.csv` (photographer + link per image)
+so you can cite sources. **Spot-check the results** — and make sure the subjects
+roughly match your AI images (if your AI set has people, get real people too),
+so participants can't guess from subject alone.
+
+You still need to supply the **AI** images yourself (e.g. from an image
+generator) into `photos/ai/`.
+
 ## 2. Run it
 
 You need [Node.js](https://nodejs.org) (v18 or newer). Then, in this folder:
