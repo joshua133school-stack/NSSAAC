@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Real or Rendered — A study in machine-made images</title>
-  <meta name="description" content="A statistics study exploring whether people can tell AI-generated images from real photographs." />
+  <title>진짜? — Real, or rendered?</title>
+  <meta name="description" content="진짜? A statistics study exploring whether people can tell AI-generated images from real photographs." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..600&family=Inter:wght@300;400;500;600&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
@@ -24,11 +24,13 @@
     <!-- ───────────────────────── Intro ───────────────────────── -->
     <section class="screen is-active" id="screen-intro">
       <div class="screen-inner narrow">
-        <p class="eyebrow" data-stagger>A statistics study</p>
-        <h1 class="display" data-stagger>Real, or rendered?</h1>
+        <p class="eyebrow" data-stagger>통계 연구 · A statistics study</p>
+        <h1 class="display" data-stagger>진짜?</h1>
+        <p class="subtitle" data-stagger>Real, or rendered?</p>
         <p class="lede" data-stagger>
-          Machines now make images that look like memories. We are gathering data on
-          a simple question: <em>can people still tell the difference?</em>
+          기계가 만든 이미지를 진짜와 구별할 수 있을까요?
+          We are gathering data on a simple question:
+          <em>can people still tell the difference?</em>
         </p>
         <p class="muted" data-stagger>
           You will answer a few questions about yourself, then look at about
@@ -36,7 +38,7 @@
           for each, whether it was made by a camera or by a machine. It takes
           around five minutes. Your responses are anonymous.
         </p>
-        <button class="btn primary" id="start-btn" data-stagger>Begin</button>
+        <button class="btn primary" id="start-btn" data-stagger>시작하기 · Begin</button>
         <p class="fineprint" data-stagger>No personal identifiers are collected. Data is used for a school statistics project.</p>
       </div>
     </section>
@@ -200,13 +202,15 @@
         </figure>
 
         <div class="quiz-panel" id="quiz-panel">
-          <p class="quiz-question">Made by a camera, or by a machine?</p>
+          <p class="quiz-question">진짜 사진일까, AI가 만든 걸까?<span class="q-en">Made by a camera, or by a machine?</span></p>
 
           <div class="choice-row">
             <button class="choice" data-guess="real">
+              <span class="choice-kr">진짜</span>
               <span class="choice-label">A real photograph</span>
             </button>
             <button class="choice" data-guess="ai">
+              <span class="choice-kr">가짜</span>
               <span class="choice-label">AI-generated</span>
             </button>
           </div>
@@ -252,8 +256,9 @@
     <!-- ───────────────────────── Done ───────────────────────── -->
     <section class="screen" id="screen-done">
       <div class="screen-inner narrow center">
-        <p class="eyebrow" data-stagger>That's everything</p>
-        <h2 class="display small" data-stagger>Thank you.</h2>
+        <p class="eyebrow" data-stagger>다 끝났어요 · That's everything</p>
+        <h2 class="display small" data-stagger>감사합니다.</h2>
+        <p class="subtitle" data-stagger>Thank you.</p>
         <p class="lede" id="done-message" data-stagger>Your responses have been recorded.</p>
         <div class="score-card" id="score-card" hidden>
           <span class="score-num" id="score-num">—</span>
