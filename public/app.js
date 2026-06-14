@@ -188,6 +188,108 @@
     });
 
     $('#next-btn').addEventListener('click', nextPhoto);
+
+    setupMarking();
+  }
+
+  // ---- highlight ("mark the weird part") canvas ----------------------------
+
+  const mark = { canvas: null, ctx: null, drawing: false, hasDrawn: false };
+
+  function setupMarking() {
+    mark.canvas = $('#mark-canvas');
+    mark.ctx = mark.canvas.getContext('2d');
+
+    const pos = (e) => {
+      const r = mark.canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    };
+    const start = (e) => {
+      if (!$('#photo-frame').classList.contains('marking')) return;
+      mark.drawing = true;
+      mark.hasDrawn = true;
+      const p = pos(e);
+      mark.ctx.beginPath();
+      mark.ctx.moveTo(p.x, p.y);
+      e.preventDefault();
+    };
+    const move = (e) => {
+      if (!mark.drawing) return;
+      const p = pos(e);
+      const w = Math.max(10, mark.canvas.width * 0.035);
+      mark.ctx.lineWidth = w;
+      mark.ctx.lineCap = 'round';
+      mark.ctx.lineJoin = 'round';
+      mark.ctx.strokeStyle = 'rgba(255, 70, 45, 0.45)';
+      mark.ctx.lineTo(p.x, p.y);
+      mark.ctx.stroke();
+      e.preventDefault();
+    };
+    const end = () => { mark.drawing = false; };
+
+    mark.canvas.addEventListener('pointerdown', start);
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', end);
+
+    $('#mark-clear').addEventListener('click', clearMarks);
+  }
+
+  function sizeMarkCanvas() {
+    const frame = $('#photo-frame');
+    const w = frame.clientWidth;
+    const h = frame.clientHeight;
+    if (!w || !h) return;
+    // resizing the canvas also clears it
+    mark.canvas.width = w;
+    mark.canvas.height = h;
+    mark.hasDrawn = false;
+  }
+
+  function clearMarks() {
+    if (!mark.ctx) return;
+    sizeMarkCanvas();
+    mark.ctx.clearRect(0, 0, mark.canvas.width, mark.canvas.height);
+    mark.hasDrawn = false;
+  }
+
+  /**
+   * Flatten the photo + the highlight into one small JPEG and return it as
+   * base64 (no data-URL prefix), or null if the participant drew nothing.
+   */
+  function buildAnnotation() {
+    if (!mark.hasDrawn) return null;
+    const img = $('#quiz-image');
+    const cw = mark.canvas.width;
+    const ch = mark.canvas.height;
+    if (!cw || !ch || !img.naturalWidth) return null;
+
+    const out = document.createElement('canvas');
+    out.width = cw;
+    out.height = ch;
+    const ctx = out.getContext('2d');
+
+    // replicate object-fit: cover so the marks line up with the photo
+    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+    const dw = img.naturalWidth * scale;
+    const dh = img.naturalHeight * scale;
+    ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    ctx.drawImage(mark.canvas, 0, 0);
+
+    // downscale so the spreadsheet stays light
+    const maxDim = 480;
+    const s = Math.min(1, maxDim / Math.max(cw, ch));
+    let final = out;
+    if (s < 1) {
+      final = document.createElement('canvas');
+      final.width = Math.round(cw * s);
+      final.height = Math.round(ch * s);
+      final.getContext('2d').drawImage(out, 0, 0, final.width, final.height);
+    }
+    try {
+      return final.toDataURL('image/jpeg', 0.7).split(',')[1] || null;
+    } catch (e) {
+      return null; // tainted canvas (shouldn't happen for same-origin images)
+    }
   }
 
   function renderPhoto() {
@@ -199,6 +301,7 @@
       confidence: 5,
       reasonTags: [],
       reasonText: '',
+      annotation: null,
     };
 
     // progress
@@ -221,12 +324,28 @@
     $('#confidence-out').textContent = '5';
     $('#reasonText').value = '';
     $('#followup').hidden = true;
+
+    // reset the highlight layer for the new photo
+    frame.classList.remove('marking');
+    clearMarks();
   }
 
   function selectGuess(btn) {
     $$('.choice').forEach((b) => b.classList.remove('selected'));
     btn.classList.add('selected');
-    state.current.guess = btn.dataset.guess;
+    const guess = btn.dataset.guess;
+    state.current.guess = guess;
+
+    // the reason prompt adapts to what they chose
+    const q = guess === 'ai'
+      ? '왜 AI(가짜)처럼 느껴졌나요?'
+      : '왜 진짜라고 생각했나요?';
+    $('#reason-question').innerHTML =
+      q + ' <span class="hint">(여러 개 선택 가능 · select any)</span>';
+
+    // turn on highlighting for this photo
+    $('#photo-frame').classList.add('marking');
+
     $('#followup').hidden = false;
     $('#followup').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -241,6 +360,7 @@
     state.current.confidence = Number($('#confidence').value);
     state.current.reasonText = $('#reasonText').value.trim();
     syncReasonTags();
+    state.current.annotation = buildAnnotation();
     state.responses.push(state.current);
 
     state.index += 1;

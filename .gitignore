@@ -3,6 +3,7 @@ node_modules/
 # Collected study data — keep private, don't commit participant responses
 data/results.csv
 data/results.json
+data/annotations/
 
 # OS / editor cruft
 .DS_Store

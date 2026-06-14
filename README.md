@@ -117,12 +117,28 @@ Download the CSV from the running site at `http://localhost:3000/api/results.csv
 | `guess`               | What they chose: `ai` or `real`                       |
 | `is_correct`          | `1` if guess matched the truth, else `0`              |
 | `confidence`          | Their confidence on that image (1–10)                 |
-| `reason_tags`         | Cues they picked (e.g. "Hands / fingers; Lighting")   |
+| `reason_tags`         | Cues they picked (Korean labels, e.g. "손·손가락이 이상해서") |
 | `reason_text`         | Optional free-text reason for that image              |
+| `has_annotation`      | `yes` if they highlighted part of the photo, else `no`|
+| `annotation_image`    | (Sheet only) the highlighted photo, pasted into the row |
 
 > **Tip for analysis:** `is_correct` averaged per participant gives an accuracy
 > score; you can then test whether accuracy relates to age, AI experience,
 > self-rated ability, confidence, etc.
+
+### The highlight feature (marking "the weird part")
+
+After choosing 진짜/가짜, participants can **draw on the photo** to highlight the
+region that caught their eye. When they do, the app flattens the photo + their
+highlight into a small image:
+
+- **On the Google Sheet** it's pasted right into the row, in an
+  `annotation_image` column (a small thumbnail; click to enlarge).
+- **In local testing** it's saved as a `.jpg` under `data/annotations/`
+  (named `<submission_id>_<photo_index>.jpg`).
+
+The reason buttons and prompts are in Korean and adapt to the choice
+(e.g. "왜 AI(가짜)처럼 느껴졌나요?" vs "왜 진짜라고 생각했나요?").
 
 ## Why these demographic questions?
 

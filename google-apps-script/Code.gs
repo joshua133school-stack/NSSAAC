@@ -48,6 +48,7 @@ function doPost(e) {
 
     const columns = body.columns || [];
     const rows = body.rows || [];
+    const images = body.images || []; // base64 JPEG per row ('' if none)
     if (!rows.length) {
       return json({ ok: false, error: 'No rows' });
     }
@@ -56,9 +57,14 @@ function doPost(e) {
     let sheet = ss.getSheetByName(SHEET_NAME);
     if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
 
+    // The highlighted images are pasted into this column (with a gap so they
+    // don't sit on top of the data).
+    const imgCol = (columns.length || rows[0].length) + 2;
+
     // Write the header row once.
     if (sheet.getLastRow() === 0 && columns.length) {
       sheet.appendRow(columns);
+      sheet.getRange(1, imgCol).setValue('annotation_image');
       sheet.setFrozenRows(1);
     }
 
@@ -66,7 +72,26 @@ function doPost(e) {
     const start = sheet.getLastRow() + 1;
     sheet.getRange(start, 1, rows.length, rows[0].length).setValues(rows);
 
-    return json({ ok: true, added: rows.length });
+    // Paste each highlighted image into the sheet, anchored to its row.
+    let pasted = 0;
+    for (let i = 0; i < images.length; i++) {
+      const b64 = images[i];
+      if (!b64) continue;
+      try {
+        const blob = Utilities.newBlob(
+          Utilities.base64Decode(b64), 'image/jpeg', 'mark_' + (start + i) + '.jpg');
+        const oi = sheet.insertImage(blob, imgCol, start + i);
+        // shrink to a tidy thumbnail while keeping aspect ratio
+        const h = 90;
+        const ratio = oi.getWidth() / oi.getHeight();
+        oi.setHeight(h).setWidth(Math.round(h * ratio));
+        pasted++;
+      } catch (imgErr) {
+        // Never fail a whole submission because one image couldn't paste.
+      }
+    }
+
+    return json({ ok: true, added: rows.length, images: pasted });
   } catch (err) {
     return json({ ok: false, error: String(err) });
   } finally {

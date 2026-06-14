@@ -199,6 +199,7 @@
       <div class="quiz-stage">
         <figure class="photo-frame" id="photo-frame">
           <img id="quiz-image" alt="Image to assess" />
+          <canvas id="mark-canvas" class="mark-canvas"></canvas>
         </figure>
 
         <div class="quiz-panel" id="quiz-panel">
@@ -217,7 +218,7 @@
 
           <div class="followup" id="followup" hidden>
             <div class="field full">
-              <label>How sure are you? <span class="hint">(1 = guessing, 10 = certain)</span></label>
+              <label>얼마나 확신하나요? <span class="hint">(1 = 찍었어요, 10 = 확실해요)</span></label>
               <div class="slider-wrap">
                 <input type="range" id="confidence" min="1" max="10" value="5" />
                 <output id="confidence-out">5</output>
@@ -225,29 +226,37 @@
             </div>
 
             <div class="field full">
-              <label>What made you decide that? <span class="hint">(select any)</span></label>
+              <label id="reason-question">왜 그렇게 느꼈나요? <span class="hint">(여러 개 선택 가능 · select any)</span></label>
               <div class="chips" id="reason-tags">
-                <button type="button" class="chip" data-tag="Lighting / shadows">Lighting / shadows</button>
-                <button type="button" class="chip" data-tag="Skin / faces">Skin / faces</button>
-                <button type="button" class="chip" data-tag="Hands / fingers">Hands / fingers</button>
-                <button type="button" class="chip" data-tag="Eyes / teeth">Eyes / teeth</button>
-                <button type="button" class="chip" data-tag="Text / writing">Text / writing</button>
-                <button type="button" class="chip" data-tag="Background details">Background details</button>
-                <button type="button" class="chip" data-tag="Textures / patterns">Textures / patterns</button>
-                <button type="button" class="chip" data-tag="Looks too perfect">Looks too perfect</button>
-                <button type="button" class="chip" data-tag="Looks too real">Looks too real</button>
-                <button type="button" class="chip" data-tag="Weird artifacts">Weird artifacts</button>
-                <button type="button" class="chip" data-tag="Composition / framing">Composition / framing</button>
-                <button type="button" class="chip" data-tag="Just a feeling">Just a feeling</button>
+                <button type="button" class="chip" data-tag="느낌이 묘해서">느낌이 묘해서</button>
+                <button type="button" class="chip" data-tag="빛·그림자가 어색해서">빛·그림자가 어색해서</button>
+                <button type="button" class="chip" data-tag="피부·얼굴이 이상해서">피부·얼굴이 이상해서</button>
+                <button type="button" class="chip" data-tag="손·손가락이 이상해서">손·손가락이 이상해서</button>
+                <button type="button" class="chip" data-tag="눈·치아가 이상해서">눈·치아가 이상해서</button>
+                <button type="button" class="chip" data-tag="글자가 깨져서">글자가 깨져서</button>
+                <button type="button" class="chip" data-tag="배경이 이상해서">배경이 이상해서</button>
+                <button type="button" class="chip" data-tag="질감·무늬가 이상해서">질감·무늬가 이상해서</button>
+                <button type="button" class="chip" data-tag="너무 완벽해서">너무 완벽해서</button>
+                <button type="button" class="chip" data-tag="너무 진짜 같아서">너무 진짜 같아서</button>
+                <button type="button" class="chip" data-tag="이상한 흔적이 보여서">이상한 흔적이 보여서</button>
+                <button type="button" class="chip" data-tag="그냥 느낌">그냥 느낌</button>
               </div>
             </div>
 
             <div class="field full">
-              <label for="reasonText">Anything else about <em>this</em> image? <span class="hint">(optional)</span></label>
-              <textarea id="reasonText" rows="2" placeholder="In a few words…"></textarea>
+              <label>이상하게 보이는 부분을 칠해 주세요 <span class="hint">(사진 위에 손가락·마우스로 · optional)</span></label>
+              <div class="mark-tools">
+                <span class="mark-hint" id="mark-hint">사진 위를 드래그해서 표시하세요</span>
+                <button type="button" class="mark-clear" id="mark-clear">지우기 · Clear</button>
+              </div>
             </div>
 
-            <button class="btn primary" id="next-btn">Next image</button>
+            <div class="field full">
+              <label for="reasonText">이 사진에 대해 더 하고 싶은 말이 있나요? <span class="hint">(선택 · optional)</span></label>
+              <textarea id="reasonText" rows="2" placeholder="한두 마디로…"></textarea>
+            </div>
+
+            <button class="btn primary" id="next-btn">다음 사진 · Next</button>
           </div>
         </div>
       </div>

@@ -152,6 +152,7 @@ const CSV_COLUMNS = [
   'confidence',
   'reason_tags',
   'reason_text',
+  'has_annotation',
 ];
 const CSV_HEADER = CSV_COLUMNS.join(',');
 
@@ -178,7 +179,7 @@ function appendJson(record) {
  * Send the flattened rows to a Google Sheet via an Apps Script web app.
  * Resolves on success, throws on any failure so the caller can react.
  */
-async function sendToSheet(columns, rows) {
+async function sendToSheet(columns, rows, images) {
   const res = await fetch(SHEET_WEBHOOK_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -189,6 +190,8 @@ async function sendToSheet(columns, rows) {
       secret: SHEET_SHARED_SECRET,
       columns,
       rows,
+      // images[i] is the base64 JPEG (no prefix) for rows[i], or '' if none.
+      images: images || [],
     }),
   });
   if (!res.ok) {
@@ -209,7 +212,8 @@ async function sendToSheet(columns, rows) {
 
 ensureDirs();
 
-app.use(express.json({ limit: '1mb' }));
+// Limit is generous because submissions can carry highlighted-image snapshots.
+app.use(express.json({ limit: '30mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Serve the photos. They are public by necessity (the browser must load them),
@@ -253,6 +257,11 @@ app.post('/api/submit', async (req, res) => {
 
   const flat = (v) => (Array.isArray(v) ? v.join('; ') : v);
 
+  // Parallel array of highlighted-image snapshots (base64 JPEG, no prefix).
+  const images = responses.map((r) =>
+    (typeof r.annotation === 'string' && r.annotation.length > 0) ? r.annotation : ''
+  );
+
   const rows = responses.map((r, i) => {
     const guess = r.guess;
     const truth = r.truth;
@@ -281,16 +290,31 @@ app.post('/api/submit', async (req, res) => {
       r.confidence,
       flat(r.reasonTags),
       r.reasonText,
+      images[i] ? 'yes' : 'no',
     ];
   });
 
   // Best-effort local backup. On hosts with an ephemeral disk (e.g. Render's
   // free tier) this may not persist, which is fine — the Google Sheet is the
   // source of truth. So we never fail the request just because disk writes did.
+  // The big base64 images are written as .jpg files, not stuffed into JSON.
+  const responsesForJson = responses.map((r, i) => {
+    const { annotation, ...rest } = r;
+    return { ...rest, has_annotation: images[i] ? true : false };
+  });
   let localSaved = false;
   try {
     appendCsv(rows);
-    appendJson({ submissionId, timestamp, demographics: demo, responses });
+    appendJson({ submissionId, timestamp, demographics: demo, responses: responsesForJson });
+    const annotDir = path.join(DATA_DIR, 'annotations');
+    images.forEach((b64, i) => {
+      if (!b64) return;
+      fs.mkdirSync(annotDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(annotDir, `${submissionId}_${i + 1}.jpg`),
+        Buffer.from(b64, 'base64')
+      );
+    });
     localSaved = true;
   } catch (err) {
     console.warn('Local backup write failed (continuing):', err.message);
@@ -299,7 +323,7 @@ app.post('/api/submit', async (req, res) => {
   // Primary store: the Google Sheet, when configured.
   if (SHEET_WEBHOOK_URL) {
     try {
-      await sendToSheet(CSV_COLUMNS, rows);
+      await sendToSheet(CSV_COLUMNS, rows, images);
     } catch (err) {
       console.error('Failed to send submission to Google Sheet:', err.message);
       return res.status(502).json({ ok: false, error: 'Could not save response.' });
