@@ -30,21 +30,26 @@ server ignores non-image files.
 ### Need real photos fast? Pull them from Pexels
 
 Pexels prohibits AI-generated uploads, so it's a good source for the **real**
-side. A helper script downloads a diverse, subject-spread batch straight into
-`photos/real/`:
+side. A helper script downloads **random** real photos straight into
+`photos/real/` and records what each one is:
 
 1. Get a free API key at <https://www.pexels.com/api/>.
 2. Run:
    ```bash
    PEXELS_API_KEY=your_key_here npm run fetch:real
-   # options: COUNT (default 40), TOPICS, SIZE
-   PEXELS_API_KEY=key COUNT=30 TOPICS="portrait,food,city,dog" npm run fetch:real
+   # how many? (default 40)
+   PEXELS_API_KEY=key COUNT=30 npm run fetch:real
    ```
 
-It also writes `photos/real/_pexels_credits.csv` (photographer + link per image)
-so you can cite sources. **Spot-check the results** — and make sure the subjects
-roughly match your AI images (if your AI set has people, get real people too),
-so participants can't guess from subject alone.
+It pulls photos at random from Pexels' curated feed, names each file after its
+content, and writes `photos/real/_pexels_credits.csv` with each photo's
+**description/classification**, photographer, and link (handy for citing
+sources and for knowing what's in your set).
+
+Because the photos are **random**, the subject mix is whatever comes up — it can
+be light on people/faces. **Spot-check the results**, and if your AI set has
+many portraits, add a few real portraits by hand so participants can't guess
+from subject alone.
 
 You still need to supply the **AI** images yourself (e.g. from an image
 generator) into `photos/ai/`.

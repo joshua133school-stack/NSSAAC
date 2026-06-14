@@ -1,32 +1,37 @@
 'use strict';
 
 /**
- * fetch-pexels.js — download a diverse batch of REAL photos into photos/real/
+ * fetch-pexels.js — download RANDOM real photos into photos/real/ and record
+ * what each one is.
  *
  * Pexels prohibits AI-generated uploads, so its library is genuine photography
- * — a good fit for the "real" side of the study. This script spreads the
- * download across many subjects (people, food, streets, nature, objects…) so
- * your real set isn't all landscapes, and writes a credits file you can cite.
+ * — a good fit for the "real" side of the study.
+ *
+ * How it works: rather than choosing categories up front, this pulls photos at
+ * random from Pexels' curated feed, then captures each photo's description /
+ * classification (Pexels' "alt" text) into a credits file. So the categories
+ * come FROM the photos, not the other way around.
  *
  * ─────────────────────────────────────────────────────────────────────────
  * USAGE
  *   1. Get a free API key: https://www.pexels.com/api/  (sign up, copy key)
- *   2. Run it:
- *        PEXELS_API_KEY=your_key_here node scripts/fetch-pexels.js
- *      or with options:
- *        PEXELS_API_KEY=key COUNT=40 node scripts/fetch-pexels.js
- *        PEXELS_API_KEY=key COUNT=30 TOPICS="portrait,food,city" node scripts/fetch-pexels.js
+ *   2. Run it (from inside the project folder):
+ *        PEXELS_API_KEY=your_key_here npm run fetch:real
+ *      or choose how many:
+ *        PEXELS_API_KEY=key COUNT=40 npm run fetch:real
  *
  * Options (environment variables):
  *   PEXELS_API_KEY  (required) your Pexels API key
- *   COUNT           how many photos to download in total      (default 40)
- *   TOPICS          comma-separated subjects to spread across (default: a
- *                   broad mix; see DEFAULT_TOPICS below)
+ *   COUNT           how many photos to download in total   (default 40)
  *   SIZE            pexels size field: large | large2x | medium (default large)
  *
- * ⚠ Spot-check the results before using them. Policy forbids AI images, but
- *   enforcement isn't perfect, and you want your real/AI sets to cover similar
- *   subjects so participants can't "cheat" on subject alone.
+ * Output:
+ *   photos/real/<slug>_<id>.jpg          the images (named after their content)
+ *   photos/real/_pexels_credits.csv      filename, description, photographer, links
+ *
+ * ⚠ These are RANDOM, so the mix of subjects is whatever comes up (could be
+ *   light on people/faces). Spot-check the results and, if your AI set has lots
+ *   of portraits, you may want to add a few real portraits by hand to match.
  */
 
 const fs = require('fs');
@@ -38,32 +43,20 @@ const SIZE = process.env.SIZE || 'large';
 const OUT_DIR = path.join(__dirname, '..', 'photos', 'real');
 const CREDITS_PATH = path.join(OUT_DIR, '_pexels_credits.csv');
 
-// A broad spread of everyday subjects. Includes people-heavy topics on purpose,
-// since AI images are often easiest to judge on faces/hands.
-const DEFAULT_TOPICS = [
-  'portrait', 'candid people', 'street photography', 'food', 'coffee',
-  'landscape', 'mountains', 'ocean', 'forest', 'animals', 'dog', 'bird',
-  'architecture', 'city at night', 'interior room', 'desk workspace',
-  'flowers', 'market', 'sports', 'car', 'kitchen', 'children playing',
-];
-const TOPICS = (process.env.TOPICS
-  ? process.env.TOPICS.split(',').map((s) => s.trim()).filter(Boolean)
-  : DEFAULT_TOPICS);
+const PER_PAGE = 80;          // Pexels max per request
+const MAX_PAGE = 50;          // pick random pages within the curated feed
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const randInt = (n) => Math.floor(Math.random() * n);
+const randInt = (n) => 1 + Math.floor(Math.random() * n);
 
-async function searchTopic(topic, perPage) {
-  // random early page for variety run-to-run (pages 1..5)
-  const page = 1 + randInt(5);
-  const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(topic)}`
-    + `&per_page=${perPage}&page=${page}&orientation=landscape`;
+async function fetchCuratedPage(page) {
+  const url = `https://api.pexels.com/v1/curated?per_page=${PER_PAGE}&page=${page}`;
   const res = await fetch(url, { headers: { Authorization: API_KEY } });
   if (res.status === 429) {
     throw new Error('Rate limited by Pexels (free tier ~200 req/hour). Try later.');
   }
   if (!res.ok) {
-    throw new Error(`Pexels search failed (${res.status}) for "${topic}"`);
+    throw new Error(`Pexels curated request failed (${res.status})`);
   }
   const data = await res.json();
   return data.photos || [];
@@ -76,6 +69,15 @@ async function download(url, dest) {
   fs.writeFileSync(dest, buf);
 }
 
+function slugify(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+    .replace(/-+$/g, '');
+}
+
 function csvEscape(v) {
   const s = String(v == null ? '' : v);
   return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
@@ -85,54 +87,57 @@ async function main() {
   if (!API_KEY) {
     console.error('\n  Missing PEXELS_API_KEY.');
     console.error('  Get one free at https://www.pexels.com/api/ then run:');
-    console.error('    PEXELS_API_KEY=your_key node scripts/fetch-pexels.js\n');
+    console.error('    PEXELS_API_KEY=your_key npm run fetch:real\n');
     process.exit(1);
   }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
-
-  const needHeader = !fs.existsSync(CREDITS_PATH);
-  if (needHeader) {
-    fs.writeFileSync(CREDITS_PATH, 'filename,photographer,photographer_url,pexels_url,topic\n');
+  if (!fs.existsSync(CREDITS_PATH)) {
+    fs.writeFileSync(CREDITS_PATH,
+      'filename,description,photographer,photographer_url,pexels_url\n');
   }
 
-  const perTopic = Math.max(2, Math.ceil(COUNT / TOPICS.length));
   const seen = new Set();
   let saved = 0;
+  let attempts = 0;
 
-  console.log(`\n  Downloading ~${COUNT} real photos from Pexels into photos/real/`);
-  console.log(`  Spreading across ${TOPICS.length} topics...\n`);
+  console.log(`\n  Downloading ${COUNT} RANDOM real photos from Pexels into photos/real/`);
+  console.log('  Recording each photo\'s description as we go...\n');
 
-  for (const topic of TOPICS) {
-    if (saved >= COUNT) break;
+  while (saved < COUNT && attempts < 40) {
+    attempts++;
     let photos = [];
     try {
-      photos = await searchTopic(topic, Math.min(perTopic + 4, 30));
+      photos = await fetchCuratedPage(randInt(MAX_PAGE));
     } catch (err) {
-      console.warn(`  ! ${topic}: ${err.message}`);
+      console.warn(`  ! ${err.message}`);
       if (/Rate limited/.test(err.message)) break;
       continue;
     }
 
-    let fromTopic = 0;
+    // shuffle the page so we don't always take the same ones
+    photos.sort(() => Math.random() - 0.5);
+
     for (const p of photos) {
-      if (saved >= COUNT || fromTopic >= perTopic) break;
+      if (saved >= COUNT) break;
       if (seen.has(p.id)) continue;
       seen.add(p.id);
 
-      const src = p.src[SIZE] || p.src.large || p.src.original;
-      const filename = `real_pexels_${p.id}.jpg`;
+      const description = p.alt || '';        // the "name / classification"
+      const slug = slugify(description) || 'photo';
+      const filename = `real_${slug}_${p.id}.jpg`;
       const dest = path.join(OUT_DIR, filename);
       if (fs.existsSync(dest)) continue;
 
+      const src = p.src[SIZE] || p.src.large || p.src.original;
       try {
         await download(src, dest);
         fs.appendFileSync(CREDITS_PATH, [
-          filename, p.photographer, p.photographer_url, p.url, topic,
+          filename, description, p.photographer, p.photographer_url, p.url,
         ].map(csvEscape).join(',') + '\n');
         saved++;
-        fromTopic++;
-        process.stdout.write(`  ✓ ${saved.toString().padStart(3)}  ${topic.padEnd(20)} ${filename}\n`);
+        process.stdout.write(
+          `  ✓ ${saved.toString().padStart(3)}  ${(description || '(no description)').slice(0, 48)}\n`);
       } catch (err) {
         console.warn(`  ! download error: ${err.message}`);
       }
@@ -141,11 +146,11 @@ async function main() {
   }
 
   console.log(`\n  Done. Saved ${saved} photos to photos/real/`);
-  console.log(`  Credits written to ${path.relative(path.join(__dirname, '..'), CREDITS_PATH)}`);
+  console.log(`  Descriptions/credits -> ${path.relative(path.join(__dirname, '..'), CREDITS_PATH)}`);
   if (saved < COUNT) {
-    console.log(`  (Wanted ${COUNT}; got ${saved}. Re-run for more, or add TOPICS.)`);
+    console.log(`  (Wanted ${COUNT}; got ${saved}. Re-run to top up.)`);
   }
-  console.log('  ⚠ Spot-check the images, and match subjects to your AI set.\n');
+  console.log('  ⚠ Random mix — spot-check, and add real portraits by hand if your AI set has many.\n');
 }
 
 main().catch((err) => {
