@@ -32,148 +32,146 @@
 
     <!-- ─────────────────────── Demographics ─────────────────────── -->
     <section class="screen" id="screen-demographics">
-      <div class="screen-inner">
-        <p class="eyebrow">Part one</p>
-        <h2 class="title">A little about you</h2>
-        <p class="muted">These help us understand the patterns in the results. Answer what you're comfortable with — only age and gender are required.</p>
+      <form id="demographics-form" class="q-flow" novalidate>
 
-        <form id="demographics-form" class="form" novalidate>
-          <div class="field">
-            <label for="age">Age <span class="req">*</span></label>
-            <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />
+        <div class="q-block">
+          <label for="age">나이는 어떻게 되시나요? <span class="req">*</span><span class="q-en">Your age</span></label>
+          <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />
+          <button type="button" class="q-next">다음 ↓</button>
+        </div>
+
+        <div class="q-block">
+          <label for="gender">성별이 어떻게 되시나요? <span class="req">*</span><span class="q-en">Gender</span></label>
+          <select id="gender" name="gender" required>
+            <option value="" disabled selected>선택…</option>
+            <option value="Woman">여성</option>
+            <option value="Man">남성</option>
+            <option value="Non-binary">논바이너리</option>
+            <option value="Prefer to self-describe">직접 입력</option>
+            <option value="Prefer not to say">답변 안 함</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="education">최종 학력은 어떻게 되시나요?<span class="q-en">Highest level of education</span></label>
+          <select id="education" name="education">
+            <option value="" disabled selected>선택…</option>
+            <option value="Still in school">재학 중</option>
+            <option value="High school / secondary">고등학교</option>
+            <option value="Some college / diploma">전문대 / 일부 대학</option>
+            <option value="Bachelor's degree">학사</option>
+            <option value="Master's degree">석사</option>
+            <option value="Doctorate or higher">박사 이상</option>
+            <option value="Prefer not to say">답변 안 함</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="country">어느 나라 / 지역에 계신가요?<span class="q-en">Country / region</span></label>
+          <input type="text" id="country" name="country" placeholder="예: 대한민국" autocomplete="country-name" />
+          <button type="button" class="q-next">다음 ↓</button>
+        </div>
+
+        <div class="q-block">
+          <label for="occupationField">어떤 분야에서 일하거나 공부하시나요?<span class="q-en">Field of work or study</span></label>
+          <select id="occupationField" name="occupationField">
+            <option value="" disabled selected>선택…</option>
+            <option value="Arts, design or media">예술 · 디자인 · 미디어</option>
+            <option value="Technology / computing">기술 · 컴퓨터</option>
+            <option value="Science, engineering or maths">과학 · 공학 · 수학</option>
+            <option value="Business or finance">비즈니스 · 금융</option>
+            <option value="Health or medicine">보건 · 의료</option>
+            <option value="Education">교육</option>
+            <option value="Trades or services">서비스 · 기능직</option>
+            <option value="Student (general)">학생</option>
+            <option value="Other">기타</option>
+            <option value="Prefer not to say">답변 안 함</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="nativeEnglish">영어가 모국어인가요?<span class="q-en">Is English your first language?</span></label>
+          <select id="nativeEnglish" name="nativeEnglish">
+            <option value="" disabled selected>선택…</option>
+            <option value="Yes">예</option>
+            <option value="No">아니요</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="aiUsedBefore">AI 도구를 사용해 본 적 있나요?<span class="q-en">Have you used AI tools before?</span></label>
+          <select id="aiUsedBefore" name="aiUsedBefore">
+            <option value="" disabled selected>선택…</option>
+            <option value="Yes, often">자주 사용함</option>
+            <option value="Yes, occasionally">가끔 사용함</option>
+            <option value="Once or twice">한두 번</option>
+            <option value="Never">전혀</option>
+            <option value="Not sure">잘 모르겠음</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="aiUseFrequency">AI를 얼마나 자주 사용하나요?<span class="q-en">How often do you use AI tools?</span></label>
+          <select id="aiUseFrequency" name="aiUseFrequency">
+            <option value="" disabled selected>선택…</option>
+            <option value="Daily">매일</option>
+            <option value="Weekly">매주</option>
+            <option value="Monthly">매달</option>
+            <option value="Rarely">드물게</option>
+            <option value="Never">전혀</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label>어떤 종류의 AI를 사용해 봤나요? <span class="hint">(여러 개 선택 · select all)</span></label>
+          <div class="checks" id="aiTypesUsed">
+            <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span>텍스트 · 챗봇</span></label>
+            <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span>이미지 생성</span></label>
+            <label class="check"><input type="checkbox" value="Photo editing / filters" /><span>사진 편집 · 필터</span></label>
+            <label class="check"><input type="checkbox" value="Voice / music" /><span>음성 · 음악</span></label>
+            <label class="check"><input type="checkbox" value="Video generation" /><span>영상 생성</span></label>
+            <label class="check"><input type="checkbox" value="Coding assistants" /><span>코딩 도우미</span></label>
+            <label class="check"><input type="checkbox" value="None" /><span>없음</span></label>
           </div>
+          <button type="button" class="q-next">다음 ↓</button>
+        </div>
 
-          <div class="field">
-            <label for="gender">Gender <span class="req">*</span></label>
-            <select id="gender" name="gender" required>
-              <option value="" disabled selected>Select…</option>
-              <option>Woman</option>
-              <option>Man</option>
-              <option>Non-binary</option>
-              <option>Prefer to self-describe</option>
-              <option>Prefer not to say</option>
-            </select>
+        <div class="q-block">
+          <label for="imageAiExperience">AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?<span class="q-en">Familiarity with AI-generated images</span></label>
+          <select id="imageAiExperience" name="imageAiExperience">
+            <option value="" disabled selected>선택…</option>
+            <option value="Very familiar — I make them">아주 익숙함 — 직접 만듦</option>
+            <option value="Somewhat — I've seen many">어느 정도 — 많이 봄</option>
+            <option value="A little">조금</option>
+            <option value="Not at all">전혀</option>
+          </select>
+        </div>
+
+        <div class="q-block">
+          <label for="selfRatedAbility">AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class="hint">(1 = 전혀, 10 = 전문가)</span></label>
+          <div class="slider-wrap">
+            <input type="range" id="selfRatedAbility" name="selfRatedAbility" min="1" max="10" value="5" />
+            <output id="selfRatedAbility-out">5</output>
           </div>
+          <button type="button" class="q-next">다음 ↓</button>
+        </div>
 
-          <div class="field">
-            <label for="education">Highest level of education</label>
-            <select id="education" name="education">
-              <option value="" disabled selected>Select…</option>
-              <option>Still in school</option>
-              <option>High school / secondary</option>
-              <option>Some college / diploma</option>
-              <option>Bachelor's degree</option>
-              <option>Master's degree</option>
-              <option>Doctorate or higher</option>
-              <option>Prefer not to say</option>
-            </select>
-          </div>
+        <div class="q-block">
+          <label for="visionCorrected">(필요하다면) 시력 교정을 한 상태로 보고 있나요?<span class="q-en">Viewing with corrected vision (glasses/contacts)?</span></label>
+          <select id="visionCorrected" name="visionCorrected">
+            <option value="" disabled selected>선택…</option>
+            <option value="Yes">예</option>
+            <option value="No">아니요</option>
+            <option value="I don't need correction">교정이 필요 없음</option>
+          </select>
+        </div>
 
-          <div class="field">
-            <label for="country">Country / region</label>
-            <input type="text" id="country" name="country" placeholder="e.g. Namibia" autocomplete="country-name" />
-          </div>
-
-          <div class="field">
-            <label for="occupationField">Field of work or study</label>
-            <select id="occupationField" name="occupationField">
-              <option value="" disabled selected>Select…</option>
-              <option>Arts, design or media</option>
-              <option>Technology / computing</option>
-              <option>Science, engineering or maths</option>
-              <option>Business or finance</option>
-              <option>Health or medicine</option>
-              <option>Education</option>
-              <option>Trades or services</option>
-              <option>Student (general)</option>
-              <option>Other</option>
-              <option>Prefer not to say</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="nativeEnglish">Is English your first language?</label>
-            <select id="nativeEnglish" name="nativeEnglish">
-              <option value="" disabled selected>Select…</option>
-              <option>Yes</option>
-              <option>No</option>
-            </select>
-          </div>
-
-          <hr class="divider" />
-          <p class="subhead">Your experience with AI</p>
-
-          <div class="field">
-            <label for="aiUsedBefore">Have you used AI tools before?</label>
-            <select id="aiUsedBefore" name="aiUsedBefore">
-              <option value="" disabled selected>Select…</option>
-              <option>Yes, often</option>
-              <option>Yes, occasionally</option>
-              <option>Once or twice</option>
-              <option>Never</option>
-              <option>Not sure</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="aiUseFrequency">How often do you use AI tools?</label>
-            <select id="aiUseFrequency" name="aiUseFrequency">
-              <option value="" disabled selected>Select…</option>
-              <option>Daily</option>
-              <option>Weekly</option>
-              <option>Monthly</option>
-              <option>Rarely</option>
-              <option>Never</option>
-            </select>
-          </div>
-
-          <div class="field full">
-            <label>Which kinds of AI tools have you used? <span class="hint">(select all that apply)</span></label>
-            <div class="checks" id="aiTypesUsed">
-              <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span>Text / chatbots</span></label>
-              <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span>Image generation</span></label>
-              <label class="check"><input type="checkbox" value="Photo editing / filters" /><span>Photo editing / filters</span></label>
-              <label class="check"><input type="checkbox" value="Voice / music" /><span>Voice / music</span></label>
-              <label class="check"><input type="checkbox" value="Video generation" /><span>Video generation</span></label>
-              <label class="check"><input type="checkbox" value="Coding assistants" /><span>Coding assistants</span></label>
-              <label class="check"><input type="checkbox" value="None" /><span>None</span></label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="imageAiExperience">How familiar are you with AI-generated <em>images</em> specifically?</label>
-            <select id="imageAiExperience" name="imageAiExperience">
-              <option value="" disabled selected>Select…</option>
-              <option>Very familiar — I make them</option>
-              <option>Somewhat — I've seen many</option>
-              <option>A little</option>
-              <option>Not at all</option>
-            </select>
-          </div>
-
-          <div class="field full">
-            <label for="selfRatedAbility">How good do you think you are at spotting AI images? <span class="hint">(1 = no idea, 10 = expert)</span></label>
-            <div class="slider-wrap">
-              <input type="range" id="selfRatedAbility" name="selfRatedAbility" min="1" max="10" value="5" />
-              <output id="selfRatedAbility-out">5</output>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="visionCorrected">Are you viewing this with corrected vision (glasses/contacts) if you need it?</label>
-            <select id="visionCorrected" name="visionCorrected">
-              <option value="" disabled selected>Select…</option>
-              <option>Yes</option>
-              <option>No</option>
-              <option>I don't need correction</option>
-            </select>
-          </div>
-
+        <div class="q-block q-final">
           <p class="form-error" id="demographics-error" hidden></p>
+          <button type="submit" class="btn primary">이미지 보러 가기 · Continue</button>
+        </div>
 
-          <button type="submit" class="btn primary">Continue to the images</button>
-        </form>
-      </div>
+      </form>
     </section>
 
     <!-- ───────────────────────── Quiz ───────────────────────── -->

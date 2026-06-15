@@ -333,8 +333,96 @@ textarea { resize: vertical; }
 .form-error {
   color: var(--accent);
   font-size: 0.9rem;
-  margin: 0;
+  margin: 0 0 1rem;
 }
+
+/* ---- cyclical, scroll-focused demographics flow ---- */
+
+#screen-demographics {
+  min-height: 100svh;
+  padding: 0 clamp(1.2rem, 5vw, 2rem);
+}
+/* when active, scroll normally instead of vertically centring */
+#screen-demographics.is-active { display: block; }
+
+.q-flow {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 34vh;      /* so the last question can reach screen centre */
+}
+
+/* each question is its own band; only the centred one is fully visible */
+.q-block {
+  display: none;
+  min-height: 62vh;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+.q-block.revealed {
+  display: flex;
+  opacity: 0.28;
+  filter: blur(0.4px);
+  transform: translateY(10px);
+  transition: opacity 0.45s ease, transform 0.45s ease, filter 0.45s ease;
+  animation: qIn 0.55s ease;
+}
+.q-block.revealed.focused {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+@keyframes qIn {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 0.28; transform: translateY(10px); }
+}
+
+.q-block > label {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.q-block .q-en {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.92rem;
+  font-weight: 400;
+  color: var(--ink-faint);
+  margin-top: 0.35rem;
+}
+.q-block .req { color: var(--accent); }
+
+/* inputs sit larger in this layout */
+.q-block input[type="text"],
+.q-block input[type="number"],
+.q-block select {
+  font-size: 1.15rem;
+  padding: 0.85rem 1rem;
+}
+.q-block.q-invalid input,
+.q-block.q-invalid select {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(181, 72, 47, 0.18);
+}
+
+.q-next {
+  align-self: flex-start;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  cursor: pointer;
+  margin-top: 0.3rem;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+}
+.q-next:hover { background: rgba(22,21,26,0.05); transform: translateY(-1px); }
+
+.q-final { min-height: 50vh; }
 
 /* ---------------------------------------------------------------- quiz */
 

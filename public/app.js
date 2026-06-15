@@ -105,9 +105,92 @@
 
     runStagger($('#screen-intro'));
     startIntroCycle();
+    setupSurveyFlow();
 
-    $('#start-btn').addEventListener('click', () => showScreen('screen-demographics'));
+    $('#start-btn').addEventListener('click', () => {
+      showScreen('screen-demographics');
+      requestAnimationFrame(() => { window.scrollTo(0, 0); updateSurveyFocus(); });
+    });
     $('#demographics-form').addEventListener('submit', onDemographicsSubmit);
+  }
+
+  // ---- cyclical, scroll-focused demographics flow -------------------------
+
+  let surveyBlocks = [];
+
+  function setupSurveyFlow() {
+    const form = document.getElementById('demographics-form');
+    if (!form) return;
+    surveyBlocks = Array.from(form.querySelectorAll('.q-block'));
+
+    surveyBlocks.forEach((b, i) => {
+      // make sure every question (except the final submit) can advance
+      if (!b.classList.contains('q-final') && !b.querySelector('.q-next')) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'q-next';
+        btn.textContent = '다음 ↓';
+        b.appendChild(btn);
+      }
+      b.classList.toggle('revealed', i === 0);
+    });
+
+    surveyBlocks.forEach((b) => {
+      const nextBtn = b.querySelector('.q-next');
+      if (nextBtn) nextBtn.addEventListener('click', () => advanceSurvey(b));
+      // choosing a dropdown moves you along automatically
+      b.querySelectorAll('select').forEach((sel) => {
+        sel.addEventListener('change', () => advanceSurvey(b));
+      });
+    });
+
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { updateSurveyFocus(); ticking = false; });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  }
+
+  function advanceSurvey(block) {
+    // required questions must be answered before the next appears
+    const req = block.querySelector('[required]');
+    if (req && !req.value) {
+      block.classList.add('q-invalid');
+      if (req.focus) req.focus();
+      return;
+    }
+    block.classList.remove('q-invalid');
+
+    const idx = surveyBlocks.indexOf(block);
+    const next = surveyBlocks[idx + 1];
+    if (!next || next.classList.contains('revealed')) return; // don't yank when editing
+    next.classList.add('revealed');
+    setTimeout(() => scrollBlockToCentre(next), 80);
+  }
+
+  // The question nearest the centre of the screen becomes fully opaque/editable.
+  function updateSurveyFocus() {
+    if (!surveyBlocks.length) return;
+    const mid = window.innerHeight / 2;
+    let best = null;
+    let bestD = Infinity;
+    surveyBlocks.forEach((b) => {
+      if (!b.classList.contains('revealed')) return;
+      const r = b.getBoundingClientRect();
+      const c = r.top + r.height / 2;
+      const d = Math.abs(c - mid);
+      if (d < bestD) { bestD = d; best = b; }
+    });
+    surveyBlocks.forEach((b) => b.classList.toggle('focused', b === best));
+  }
+
+  function scrollBlockToCentre(b) {
+    const r = b.getBoundingClientRect();
+    const target = window.scrollY + r.top - (window.innerHeight / 2 - r.height / 2);
+    window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
   }
 
   // Big intro headline that slowly cycles through a few Korean lines.
