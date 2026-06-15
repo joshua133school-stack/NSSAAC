@@ -16,8 +16,8 @@
   --card: rgba(255, 255, 255, 0.62);
   --radius: 14px;
   --shadow: 0 24px 60px -28px rgba(22, 21, 26, 0.4);
-  --serif: "Fraunces", "Noto Serif KR", Georgia, "Times New Roman", serif;
   --sans: "Inter", "Noto Sans KR", system-ui, -apple-system, sans-serif;
+  --serif: var(--sans);   /* unified: one font family across the whole app */
 }
 
 * { box-sizing: border-box; }
@@ -177,12 +177,6 @@ body {
   margin-top: 1.6rem;
 }
 .lang-btn { min-width: 8.5rem; font-size: 1.1rem; }
-.lang-btn[data-lang="en"] {
-  font-family: "Times New Roman", Times, serif;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-.lang-btn[data-lang="ko"] { font-family: "Noto Serif KR", serif; }
 
 /* keep Korean from breaking mid-word in all the large headings */
 .display, .title, .subtitle, .quiz-question, .q-block > label { word-break: keep-all; }
