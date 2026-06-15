@@ -176,7 +176,13 @@ body {
   flex-wrap: wrap;
   margin-top: 1.6rem;
 }
-.lang-btn { min-width: 8.5rem; }
+.lang-btn { min-width: 8.5rem; font-size: 1.1rem; }
+.lang-btn[data-lang="en"] {
+  font-family: "Times New Roman", Times, serif;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.lang-btn[data-lang="ko"] { font-family: "Noto Serif KR", serif; }
 
 /* keep Korean from breaking mid-word in all the large headings */
 .display, .title, .subtitle, .quiz-question, .q-block > label { word-break: keep-all; }
@@ -635,14 +641,12 @@ textarea { resize: vertical; }
   display: flex;
   flex-direction: column;
   gap: 0.6rem;
-  opacity: 0.4;
-  transition: opacity 0.35s ease, transform 0.35s ease;
-  animation: fqIn 0.45s ease;
+  opacity: 1;
+  animation: fqIn 0.4s ease;
 }
-.fq.fq-active { opacity: 1; }
 @keyframes fqIn {
   from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 0.4; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .fq-next {
   align-self: flex-start;
@@ -697,10 +701,36 @@ textarea { resize: vertical; }
 
 /* ---------------------------------------------------------------- responsive */
 
-@media (max-width: 760px) {
-  .form { grid-template-columns: 1fr; }
-  .quiz-stage { grid-template-columns: 1fr; }
-  .photo-frame { aspect-ratio: 4 / 3; max-height: 46svh; }
+/* Tablets (portrait) and phones: stack the quiz, photo on top of the panel.
+   Phones/tablets are the primary devices for this survey. */
+@media (max-width: 920px) {
+  .quiz-stage { grid-template-columns: 1fr; gap: 1.1rem; }
+  .photo-frame { aspect-ratio: 4 / 3; max-height: 48svh; }
+  /* let tall quiz content scroll from the top instead of clipping when centred */
+  #screen-quiz.is-active { justify-content: flex-start; }
+  #screen-quiz { padding-top: 1.2rem; padding-bottom: 2.5rem; }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .screen { padding: 1.2rem; }
+  .photo-frame { max-height: 42svh; }
+  .quiz-progress { width: 100%; }
+  .quiz-stage { width: 100%; }
+  .q-block { min-height: 56vh; }
+  .consent-text { font-size: 0.88rem; }
+  /* comfier tap targets */
+  .choice { padding: 0.95rem 1.05rem; }
+  .chip { padding: 0.55rem 0.95rem; font-size: 0.9rem; }
+  .check { padding: 0.5rem 0.95rem; }
+  .btn { padding: 0.95rem 1.8rem; }
+  .lang-row { flex-direction: column; align-items: stretch; }
+  .lang-btn { width: 100%; }
+}
+
+/* Avoid the heavy backdrop-blur on small devices (perf) */
+@media (max-width: 600px) {
+  .quiz-panel, .consent-text, .check { backdrop-filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

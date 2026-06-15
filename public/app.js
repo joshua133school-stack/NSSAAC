@@ -475,13 +475,16 @@
     const steps = followupState.steps;
     if (i < 0 || i >= steps.length) return;
     followupState.step = i;
-    for (let k = 0; k <= i; k++) steps[k].classList.add('fq-revealed');
-    steps.forEach((s, idx) => s.classList.toggle('fq-active', idx === i));
+    // show only the current question (one at a time)
+    steps.forEach((s, idx) => {
+      s.classList.toggle('fq-revealed', idx === i);
+      s.classList.toggle('fq-active', idx === i);
+    });
 
-    if (i === steps.length - 1) {
-      $('#next-btn').classList.remove('fq-hidden');
-      $('#photo-frame').classList.add('marking'); // enable drawing at the highlight step
-    }
+    const isLast = i === steps.length - 1;
+    $('#next-btn').classList.toggle('fq-hidden', !isLast);
+    $('#photo-frame').classList.toggle('marking', isLast); // draw at the highlight step
+
     setTimeout(() => steps[i].scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
   }
 
