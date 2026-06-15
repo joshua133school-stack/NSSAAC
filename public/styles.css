@@ -613,7 +613,7 @@ textarea { resize: vertical; }
   font-weight: 600;
   line-height: 1;
 }
-.choice .choice-label { font-size: 1.05rem; font-weight: 500; }
+.choice .choice-label { font-size: 1.15rem; font-weight: 500; }
 .choice.selected {
   border-color: var(--accent);
   background: rgba(181, 72, 47, 0.08);
