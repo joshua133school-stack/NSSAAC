@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -21,11 +21,24 @@
 
   <main id="app">
 
+    <!-- ───────────────────── Language select ───────────────────── -->
+    <section class="screen is-active" id="screen-lang">
+      <div class="screen-inner narrow center">
+        <p class="eyebrow" data-stagger>언어 · Language</p>
+        <h1 class="display" data-stagger>진짜?</h1>
+        <p class="subtitle" data-stagger>언어를 선택하세요 · Choose your language</p>
+        <div class="lang-row" data-stagger>
+          <button class="btn primary lang-btn" data-lang="ko">한국어</button>
+          <button class="btn ghost lang-btn" data-lang="en">English</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ───────────────────────── Intro ───────────────────────── -->
-    <section class="screen is-active" id="screen-intro">
+    <section class="screen" id="screen-intro">
       <div class="screen-inner narrow center">
         <h1 class="cycle-text" id="intro-cycle" aria-live="polite"></h1>
-        <button class="btn primary" id="start-btn" data-stagger>시작하기 · Begin</button>
+        <button class="btn primary" id="start-btn" data-stagger data-ko="시작하기" data-en="Begin">시작하기</button>
       </div>
     </section>
 
@@ -34,13 +47,13 @@
       <form id="demographics-form" class="q-flow" novalidate>
 
         <div class="q-block">
-          <label for="age">나이는 어떻게 되시나요? <span class="req">*</span><span class="q-en">Your age</span></label>
+          <label for="age" data-ko="나이는 어떻게 되시나요? <span class='req'>*</span>" data-en="What is your age? <span class='req'>*</span>">나이는 어떻게 되시나요? <span class="req">*</span></label>
           <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />
-          <button type="button" class="q-next">다음 ↓</button>
+          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
         </div>
 
         <div class="q-block">
-          <label for="gender">성별이 어떻게 되시나요? <span class="req">*</span><span class="q-en">Gender</span></label>
+          <label for="gender" data-ko="성별이 어떻게 되시나요? <span class='req'>*</span>" data-en="What is your gender? <span class='req'>*</span>">성별이 어떻게 되시나요? <span class="req">*</span></label>
           <select id="gender" name="gender" required>
             <option value="" disabled selected>선택…</option>
             <option value="Woman">여성</option>
@@ -52,7 +65,7 @@
         </div>
 
         <div class="q-block">
-          <label for="education">최종 학력은 어떻게 되시나요?<span class="q-en">Highest level of education</span></label>
+          <label for="education" data-ko="최종 학력은 어떻게 되시나요?" data-en="Highest level of education?">최종 학력은 어떻게 되시나요?</label>
           <select id="education" name="education">
             <option value="" disabled selected>선택…</option>
             <option value="Still in school">재학 중</option>
@@ -66,13 +79,13 @@
         </div>
 
         <div class="q-block">
-          <label for="country">어느 나라 / 지역에 계신가요?<span class="q-en">Country / region</span></label>
-          <input type="text" id="country" name="country" placeholder="예: 대한민국" autocomplete="country-name" />
-          <button type="button" class="q-next">다음 ↓</button>
+          <label for="country" data-ko="어느 나라 / 지역에 계신가요?" data-en="Which country or region are you in?">어느 나라 / 지역에 계신가요?</label>
+          <input type="text" id="country" name="country" placeholder="예: 대한민국" data-ko-ph="예: 대한민국" data-en-ph="e.g. South Korea" autocomplete="country-name" />
+          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
         </div>
 
         <div class="q-block">
-          <label for="occupationField">어떤 분야에서 일하거나 공부하시나요?<span class="q-en">Field of work or study</span></label>
+          <label for="occupationField" data-ko="어떤 분야에서 일하거나 공부하시나요?" data-en="What field do you work or study in?">어떤 분야에서 일하거나 공부하시나요?</label>
           <select id="occupationField" name="occupationField">
             <option value="" disabled selected>선택…</option>
             <option value="Arts, design or media">예술 · 디자인 · 미디어</option>
@@ -89,7 +102,7 @@
         </div>
 
         <div class="q-block">
-          <label for="nativeEnglish">영어가 모국어인가요?<span class="q-en">Is English your first language?</span></label>
+          <label for="nativeEnglish" data-ko="영어가 모국어인가요?" data-en="Is English your first language?">영어가 모국어인가요?</label>
           <select id="nativeEnglish" name="nativeEnglish">
             <option value="" disabled selected>선택…</option>
             <option value="Yes">예</option>
@@ -98,7 +111,7 @@
         </div>
 
         <div class="q-block">
-          <label for="aiUsedBefore">AI 도구를 사용해 본 적 있나요?<span class="q-en">Have you used AI tools before?</span></label>
+          <label for="aiUsedBefore" data-ko="AI 도구를 사용해 본 적 있나요?" data-en="Have you used AI tools before?">AI 도구를 사용해 본 적 있나요?</label>
           <select id="aiUsedBefore" name="aiUsedBefore">
             <option value="" disabled selected>선택…</option>
             <option value="Yes, often">자주 사용함</option>
@@ -110,7 +123,7 @@
         </div>
 
         <div class="q-block">
-          <label for="aiUseFrequency">AI를 얼마나 자주 사용하나요?<span class="q-en">How often do you use AI tools?</span></label>
+          <label for="aiUseFrequency" data-ko="AI를 얼마나 자주 사용하나요?" data-en="How often do you use AI tools?">AI를 얼마나 자주 사용하나요?</label>
           <select id="aiUseFrequency" name="aiUseFrequency">
             <option value="" disabled selected>선택…</option>
             <option value="Daily">매일</option>
@@ -122,21 +135,21 @@
         </div>
 
         <div class="q-block">
-          <label>어떤 종류의 AI를 사용해 봤나요? <span class="hint">(여러 개 선택 · select all)</span></label>
+          <label data-ko="어떤 종류의 AI를 사용해 봤나요? <span class='hint'>(여러 개 선택)</span>" data-en="Which kinds of AI have you used? <span class='hint'>(select all)</span>">어떤 종류의 AI를 사용해 봤나요? <span class="hint">(여러 개 선택)</span></label>
           <div class="checks" id="aiTypesUsed">
-            <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span>텍스트 · 챗봇</span></label>
-            <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span>이미지 생성</span></label>
-            <label class="check"><input type="checkbox" value="Photo editing / filters" /><span>사진 편집 · 필터</span></label>
-            <label class="check"><input type="checkbox" value="Voice / music" /><span>음성 · 음악</span></label>
-            <label class="check"><input type="checkbox" value="Video generation" /><span>영상 생성</span></label>
-            <label class="check"><input type="checkbox" value="Coding assistants" /><span>코딩 도우미</span></label>
-            <label class="check"><input type="checkbox" value="None" /><span>없음</span></label>
+            <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span data-ko="텍스트 · 챗봇" data-en="Text / chatbots">텍스트 · 챗봇</span></label>
+            <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span data-ko="이미지 생성" data-en="Image generation">이미지 생성</span></label>
+            <label class="check"><input type="checkbox" value="Photo editing / filters" /><span data-ko="사진 편집 · 필터" data-en="Photo editing / filters">사진 편집 · 필터</span></label>
+            <label class="check"><input type="checkbox" value="Voice / music" /><span data-ko="음성 · 음악" data-en="Voice / music">음성 · 음악</span></label>
+            <label class="check"><input type="checkbox" value="Video generation" /><span data-ko="영상 생성" data-en="Video generation">영상 생성</span></label>
+            <label class="check"><input type="checkbox" value="Coding assistants" /><span data-ko="코딩 도우미" data-en="Coding assistants">코딩 도우미</span></label>
+            <label class="check"><input type="checkbox" value="None" /><span data-ko="없음" data-en="None">없음</span></label>
           </div>
-          <button type="button" class="q-next">다음 ↓</button>
+          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
         </div>
 
         <div class="q-block">
-          <label for="imageAiExperience">AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?<span class="q-en">Familiarity with AI-generated images</span></label>
+          <label for="imageAiExperience" data-ko="AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?" data-en="How familiar are you with AI-generated <em>images</em>?">AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?</label>
           <select id="imageAiExperience" name="imageAiExperience">
             <option value="" disabled selected>선택…</option>
             <option value="Very familiar — I make them">아주 익숙함 — 직접 만듦</option>
@@ -147,16 +160,16 @@
         </div>
 
         <div class="q-block">
-          <label for="selfRatedAbility">AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class="hint">(1 = 전혀, 10 = 전문가)</span></label>
+          <label for="selfRatedAbility" data-ko="AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class='hint'>(1 = 전혀, 10 = 전문가)</span>" data-en="How good are you at spotting AI images? <span class='hint'>(1 = no idea, 10 = expert)</span>">AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class="hint">(1 = 전혀, 10 = 전문가)</span></label>
           <div class="slider-wrap">
             <input type="range" id="selfRatedAbility" name="selfRatedAbility" min="1" max="10" value="5" />
             <output id="selfRatedAbility-out">5</output>
           </div>
-          <button type="button" class="q-next">다음 ↓</button>
+          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
         </div>
 
         <div class="q-block">
-          <label for="visionCorrected">(필요하다면) 시력 교정을 한 상태로 보고 있나요?<span class="q-en">Viewing with corrected vision (glasses/contacts)?</span></label>
+          <label for="visionCorrected" data-ko="(필요하다면) 시력 교정을 한 상태로 보고 있나요?" data-en="Are you viewing with corrected vision (if you need it)?">(필요하다면) 시력 교정을 한 상태로 보고 있나요?</label>
           <select id="visionCorrected" name="visionCorrected">
             <option value="" disabled selected>선택…</option>
             <option value="Yes">예</option>
@@ -167,7 +180,7 @@
 
         <div class="q-block q-final">
           <p class="form-error" id="demographics-error" hidden></p>
-          <button type="submit" class="btn primary">이미지 보러 가기 · Continue</button>
+          <button type="submit" class="btn primary" data-ko="이미지 보러 가기" data-en="Continue to images">이미지 보러 가기</button>
         </div>
 
       </form>
@@ -187,22 +200,22 @@
         </figure>
 
         <div class="quiz-panel" id="quiz-panel">
-          <p class="quiz-question">진짜 사진일까, AI가 만든 걸까?<span class="q-en">Made by a camera, or by a machine?</span></p>
+          <p class="quiz-question" data-ko="진짜 사진일까, AI가 만든 걸까?" data-en="A real photo, or AI-made?">진짜 사진일까, AI가 만든 걸까?</p>
 
           <div class="choice-row">
             <button class="choice" data-guess="real">
               <span class="choice-kr">진짜</span>
-              <span class="choice-label">A real photograph</span>
+              <span class="choice-label" data-ko="실제 사진" data-en="A real photo">실제 사진</span>
             </button>
             <button class="choice" data-guess="ai">
               <span class="choice-kr">가짜</span>
-              <span class="choice-label">AI-generated</span>
+              <span class="choice-label" data-ko="AI가 만든 것" data-en="AI-generated">AI가 만든 것</span>
             </button>
           </div>
 
           <div class="followup" id="followup" hidden>
             <div class="field full">
-              <label>얼마나 확신하나요? <span class="hint">(1 = 찍었어요, 10 = 확실해요)</span></label>
+              <label data-ko="얼마나 확신하나요? <span class='hint'>(1 = 찍었어요, 10 = 확실해요)</span>" data-en="How sure are you? <span class='hint'>(1 = guessing, 10 = certain)</span>">얼마나 확신하나요? <span class="hint">(1 = 찍었어요, 10 = 확실해요)</span></label>
               <div class="slider-wrap">
                 <input type="range" id="confidence" min="1" max="10" value="5" />
                 <output id="confidence-out">5</output>
@@ -210,37 +223,37 @@
             </div>
 
             <div class="field full">
-              <label id="reason-question">왜 그렇게 느꼈나요? <span class="hint">(여러 개 선택 가능 · select any)</span></label>
+              <label id="reason-question">왜 그렇게 느꼈나요?</label>
               <div class="chips" id="reason-tags">
-                <button type="button" class="chip" data-tag="느낌이 묘해서">느낌이 묘해서</button>
-                <button type="button" class="chip" data-tag="빛·그림자가 어색해서">빛·그림자가 어색해서</button>
-                <button type="button" class="chip" data-tag="피부·얼굴이 이상해서">피부·얼굴이 이상해서</button>
-                <button type="button" class="chip" data-tag="손·손가락이 이상해서">손·손가락이 이상해서</button>
-                <button type="button" class="chip" data-tag="눈·치아가 이상해서">눈·치아가 이상해서</button>
-                <button type="button" class="chip" data-tag="글자가 깨져서">글자가 깨져서</button>
-                <button type="button" class="chip" data-tag="배경이 이상해서">배경이 이상해서</button>
-                <button type="button" class="chip" data-tag="질감·무늬가 이상해서">질감·무늬가 이상해서</button>
-                <button type="button" class="chip" data-tag="너무 완벽해서">너무 완벽해서</button>
-                <button type="button" class="chip" data-tag="너무 진짜 같아서">너무 진짜 같아서</button>
-                <button type="button" class="chip" data-tag="이상한 흔적이 보여서">이상한 흔적이 보여서</button>
-                <button type="button" class="chip" data-tag="그냥 느낌">그냥 느낌</button>
+                <button type="button" class="chip" data-tag="느낌이 묘해서" data-ko="느낌이 묘해서" data-en="Something feels off">느낌이 묘해서</button>
+                <button type="button" class="chip" data-tag="빛·그림자가 어색해서" data-ko="빛·그림자가 어색해서" data-en="Lighting / shadows">빛·그림자가 어색해서</button>
+                <button type="button" class="chip" data-tag="피부·얼굴이 이상해서" data-ko="피부·얼굴이 이상해서" data-en="Skin / face">피부·얼굴이 이상해서</button>
+                <button type="button" class="chip" data-tag="손·손가락이 이상해서" data-ko="손·손가락이 이상해서" data-en="Hands / fingers">손·손가락이 이상해서</button>
+                <button type="button" class="chip" data-tag="눈·치아가 이상해서" data-ko="눈·치아가 이상해서" data-en="Eyes / teeth">눈·치아가 이상해서</button>
+                <button type="button" class="chip" data-tag="글자가 깨져서" data-ko="글자가 깨져서" data-en="Garbled text">글자가 깨져서</button>
+                <button type="button" class="chip" data-tag="배경이 이상해서" data-ko="배경이 이상해서" data-en="Background details">배경이 이상해서</button>
+                <button type="button" class="chip" data-tag="질감·무늬가 이상해서" data-ko="질감·무늬가 이상해서" data-en="Textures / patterns">질감·무늬가 이상해서</button>
+                <button type="button" class="chip" data-tag="너무 완벽해서" data-ko="너무 완벽해서" data-en="Too perfect">너무 완벽해서</button>
+                <button type="button" class="chip" data-tag="너무 진짜 같아서" data-ko="너무 진짜 같아서" data-en="Too realistic">너무 진짜 같아서</button>
+                <button type="button" class="chip" data-tag="이상한 흔적이 보여서" data-ko="이상한 흔적이 보여서" data-en="Weird artifacts">이상한 흔적이 보여서</button>
+                <button type="button" class="chip" data-tag="그냥 느낌" data-ko="그냥 느낌" data-en="Just a feeling">그냥 느낌</button>
               </div>
             </div>
 
             <div class="field full">
-              <label>이상하게 보이는 부분을 칠해 주세요 <span class="hint">(사진 위에 손가락·마우스로 · optional)</span></label>
+              <label data-ko="이상하게 보이는 부분을 칠해 주세요 <span class='hint'>(사진 위에 손가락·마우스로)</span>" data-en="Highlight the part that looks off <span class='hint'>(drag on the photo)</span>">이상하게 보이는 부분을 칠해 주세요 <span class="hint">(사진 위에 손가락·마우스로)</span></label>
               <div class="mark-tools">
-                <span class="mark-hint" id="mark-hint">사진 위를 드래그해서 표시하세요</span>
-                <button type="button" class="mark-clear" id="mark-clear">지우기 · Clear</button>
+                <span class="mark-hint" id="mark-hint" data-ko="사진 위를 드래그해서 표시하세요" data-en="Drag across the photo to mark it">사진 위를 드래그해서 표시하세요</span>
+                <button type="button" class="mark-clear" id="mark-clear" data-ko="지우기" data-en="Clear">지우기</button>
               </div>
             </div>
 
             <div class="field full">
-              <label for="reasonText">이 사진에 대해 더 하고 싶은 말이 있나요? <span class="hint">(선택 · optional)</span></label>
-              <textarea id="reasonText" rows="2" placeholder="한두 마디로…"></textarea>
+              <label for="reasonText" data-ko="이 사진에 대해 더 하고 싶은 말이 있나요? <span class='hint'>(선택)</span>" data-en="Anything else about this photo? <span class='hint'>(optional)</span>">이 사진에 대해 더 하고 싶은 말이 있나요? <span class="hint">(선택)</span></label>
+              <textarea id="reasonText" rows="2" placeholder="한두 마디로…" data-ko-ph="한두 마디로…" data-en-ph="In a few words…"></textarea>
             </div>
 
-            <button class="btn primary" id="next-btn">다음 사진 · Next</button>
+            <button class="btn primary" id="next-btn" data-ko="다음 사진" data-en="Next photo">다음 사진</button>
           </div>
         </div>
       </div>
@@ -249,42 +262,33 @@
     <!-- ───────────────────────── Done ───────────────────────── -->
     <section class="screen" id="screen-done">
       <div class="screen-inner narrow center">
-        <p class="eyebrow" data-stagger>다 끝났어요 · That's everything</p>
-        <h2 class="display small" data-stagger>감사합니다.</h2>
-        <p class="subtitle" data-stagger>Thank you.</p>
-        <p class="lede" id="done-message" data-stagger>Your responses have been recorded.</p>
+        <p class="eyebrow" data-stagger data-ko="다 끝났어요" data-en="All done">다 끝났어요</p>
+        <h2 class="display small" data-stagger data-ko="감사합니다." data-en="Thank you.">감사합니다.</h2>
+        <p class="subtitle" data-stagger data-ko="참여해 주셔서 감사합니다." data-en="Thanks for taking part.">참여해 주셔서 감사합니다.</p>
+        <p class="lede" id="done-message" data-stagger>응답이 기록되었습니다.</p>
         <div class="score-card" id="score-card" hidden>
           <span class="score-num" id="score-num">—</span>
-          <span class="score-cap">correct out of <span id="score-total">—</span></span>
+          <span class="score-cap" data-ko="정답 개수" data-en="correct">정답 개수</span>
         </div>
-        <p class="muted" id="reveal-note" data-stagger>
-          The results are pooled anonymously for analysis. Each person takes part
-          once — please share the study with others so more people can contribute.
-        </p>
+        <p class="muted" id="reveal-note" data-stagger data-ko="결과는 익명으로 모아져 분석됩니다. 한 사람당 한 번만 참여할 수 있으니, 더 많은 분들이 참여하도록 공유해 주세요!" data-en="Results are pooled anonymously for analysis. Each person takes part once — please share it so more people can contribute!">결과는 익명으로 모아져 분석됩니다. 한 사람당 한 번만 참여할 수 있으니, 더 많은 분들이 참여하도록 공유해 주세요!</p>
       </div>
     </section>
 
     <!-- ─────────────── Already participated (one chance) ─────────────── -->
     <section class="screen" id="screen-already">
       <div class="screen-inner narrow center">
-        <p class="eyebrow" data-stagger>이미 참여하셨어요 · Already done</p>
-        <h2 class="display small" data-stagger>감사합니다.</h2>
-        <p class="subtitle" data-stagger>You've already taken part.</p>
-        <p class="muted" data-stagger>
-          This study is one entry per person, and your responses are already
-          recorded. Thank you! Feel free to pass it along to someone else.
-        </p>
+        <p class="eyebrow" data-stagger data-ko="이미 참여하셨어요" data-en="Already done">이미 참여하셨어요</p>
+        <h2 class="display small" data-stagger data-ko="감사합니다." data-en="Thank you.">감사합니다.</h2>
+        <p class="subtitle" data-stagger data-ko="이미 참여하셨습니다." data-en="You've already taken part.">이미 참여하셨습니다.</p>
+        <p class="muted" data-stagger data-ko="이 연구는 한 사람당 한 번만 참여할 수 있으며, 응답은 이미 기록되었습니다. 감사합니다! 다른 분께도 공유해 주세요." data-en="This study is one entry per person, and your responses are already recorded. Thank you! Feel free to pass it along to someone else.">이 연구는 한 사람당 한 번만 참여할 수 있으며, 응답은 이미 기록되었습니다. 감사합니다! 다른 분께도 공유해 주세요.</p>
       </div>
     </section>
 
     <!-- Empty-state fallback when no photos are installed -->
     <section class="screen" id="screen-empty">
       <div class="screen-inner narrow center">
-        <h2 class="title">No images yet</h2>
-        <p class="muted">
-          Add some pictures to <code>photos/ai/</code> and <code>photos/real/</code>,
-          then refresh. See the project README for details.
-        </p>
+        <h2 class="title" data-ko="아직 이미지가 없어요" data-en="No images yet">아직 이미지가 없어요</h2>
+        <p class="muted" data-ko="photos/ai/ 와 photos/real/ 에 사진을 추가한 뒤 새로고침하세요." data-en="Add pictures to photos/ai/ and photos/real/, then refresh.">photos/ai/ 와 photos/real/ 에 사진을 추가한 뒤 새로고침하세요.</p>
       </div>
     </section>
 

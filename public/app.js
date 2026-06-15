@@ -88,30 +88,105 @@
     try { localStorage.setItem(DONE_KEY, new Date().toISOString()); } catch (e) {}
   }
 
+  // -------------------------------------------------------------- i18n
+
+  const LANG_KEY = 'nssaac_lang';
+  let currentLang = 'ko';
+
+  // Strings that are set dynamically from JS (everything else is translated
+  // inline in the HTML via data-ko / data-en attributes).
+  const STR = {
+    ko: {
+      introMsgs: [
+        '안녕하세요, 통계 실험에 참여해주셔서 감사합니다!',
+        '혹시 기계가 만든 이미지를 진짜 사진과 구별할 수 있으신가요?',
+        '아래 시작 버튼을 눌러주세요!',
+      ],
+      reasonAi: '왜 AI(가짜)처럼 느껴졌나요?',
+      reasonReal: '왜 진짜라고 생각했나요?',
+      selectAny: '여러 개 선택 가능',
+      recorded: '응답이 기록되었습니다. 결과는 다음과 같아요:',
+      recordedNoScore: '응답이 기록되었습니다. 감사합니다!',
+      failSave: '서버에 저장하지 못했지만, 참여해 주셔서 감사합니다.',
+    },
+    en: {
+      introMsgs: [
+        'Hello, and thank you for taking part in this statistics study!',
+        'Can you tell a machine-made image from a real photograph?',
+        'Press the Begin button below to start!',
+      ],
+      reasonAi: 'Why did it feel AI-generated?',
+      reasonReal: 'Why did you think it was real?',
+      selectAny: 'select any',
+      recorded: 'Your responses have been recorded. Here is how you did:',
+      recordedNoScore: 'Your responses have been recorded. Thank you!',
+      failSave: "We couldn't save to the server — but thank you for taking part.",
+    },
+  };
+
+  function t(key) { return (STR[currentLang] || STR.ko)[key]; }
+
+  // Capture the Korean option text and derive the English (= the stable value)
+  // so the dropdowns translate without per-option attributes in the HTML.
+  function setupOptionI18n() {
+    $$('#demographics-form option').forEach((opt) => {
+      if (opt.dataset.ko) return;
+      opt.dataset.ko = opt.textContent;
+      opt.dataset.en = opt.value ? opt.value : 'Select…';
+      if (!opt.value) opt.dataset.ko = '선택…';
+    });
+  }
+
+  function applyLang(lang) {
+    currentLang = (lang === 'en') ? 'en' : 'ko';
+    document.documentElement.lang = currentLang;
+    $$('[data-ko], [data-en]').forEach((el) => {
+      const val = el.getAttribute('data-' + currentLang);
+      if (val != null) el.innerHTML = val;
+    });
+    $$('[data-ko-ph], [data-en-ph]').forEach((el) => {
+      const val = el.getAttribute('data-' + currentLang + '-ph');
+      if (val != null) el.placeholder = val;
+    });
+    try { localStorage.setItem(LANG_KEY, currentLang); } catch (e) {}
+  }
+
+  function savedLang() {
+    try { return localStorage.getItem(LANG_KEY); } catch (e) { return null; }
+  }
+
   async function init() {
-    // Escape hatch for testing: visiting with ?reset clears the one-chance lock.
+    // Escape hatch for testing: visiting with ?reset clears the locks.
     if (/[?&]reset\b/.test(window.location.search)) {
-      try { localStorage.removeItem(DONE_KEY); } catch (e) {}
+      try { localStorage.removeItem(DONE_KEY); localStorage.removeItem(LANG_KEY); } catch (e) {}
     }
 
-    // If this browser already completed the study, don't let them retake.
-    if (alreadyDone()) {
-      showScreen('screen-already');
-      return;
-    }
-
-    // wire slider outputs
     bindSlider('selfRatedAbility', 'selfRatedAbility-out');
-
-    runStagger($('#screen-intro'));
-    startIntroCycle();
+    setupOptionI18n();
     setupSurveyFlow();
-
+    $('#demographics-form').addEventListener('submit', onDemographicsSubmit);
     $('#start-btn').addEventListener('click', () => {
       showScreen('screen-demographics');
       requestAnimationFrame(() => { window.scrollTo(0, 0); updateSurveyFocus(); });
     });
-    $('#demographics-form').addEventListener('submit', onDemographicsSubmit);
+
+    // If this browser already completed the study, don't let them retake.
+    if (alreadyDone()) {
+      applyLang(savedLang() || 'ko');
+      showScreen('screen-already');
+      return;
+    }
+
+    // Otherwise start at the language picker.
+    applyLang(savedLang() || 'ko'); // sensible default until they choose
+    $$('.lang-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        applyLang(btn.dataset.lang);
+        showScreen('screen-intro');
+        startIntroCycle();
+      });
+    });
+    runStagger($('#screen-lang'));
   }
 
   // ---- cyclical, scroll-focused demographics flow -------------------------
@@ -129,6 +204,8 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'q-next';
+        btn.setAttribute('data-ko', '다음 ↓');
+        btn.setAttribute('data-en', 'Next ↓');
         btn.textContent = '다음 ↓';
         b.appendChild(btn);
       }
@@ -193,29 +270,28 @@
     window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
   }
 
-  // Big intro headline that slowly cycles through a few Korean lines.
-  const INTRO_MESSAGES = [
-    '안녕하세요, 통계 실험에 참여해주셔서 감사합니다!',
-    '혹시 기계가 만든 이미지를 진짜 사진과 구별할 수 있으신가요?',
-    '아래 시작 버튼을 눌러주세요!',
-  ];
+  // Big intro headline that slowly cycles through a few lines (in the chosen
+  // language). Guarded so only one loop runs even if started twice.
+  let introCycleRunning = false;
 
   function startIntroCycle() {
     const el = document.getElementById('intro-cycle');
-    if (!el) return;
+    if (!el || introCycleRunning) return;
+    introCycleRunning = true;
+    const msgs = t('introMsgs');
     let i = 0;
-    const HOLD = 2500; // how long each line stays (your 2.5s)
+    const HOLD = 2500; // how long each line stays (2.5s)
     const FADE = 700;  // matches the CSS transition
     const show = () => {
       // stop the loop once they've left the intro screen
       const intro = document.getElementById('screen-intro');
-      if (!intro || !intro.classList.contains('is-active')) return;
-      el.textContent = INTRO_MESSAGES[i];
+      if (!intro || !intro.classList.contains('is-active')) { introCycleRunning = false; return; }
+      el.textContent = msgs[i];
       el.classList.add('visible');
       setTimeout(() => {
         el.classList.remove('visible');
         setTimeout(() => {
-          i = (i + 1) % INTRO_MESSAGES.length;
+          i = (i + 1) % msgs.length;
           show();
         }, FADE);
       }, HOLD);
@@ -462,11 +538,9 @@
     state.current.guess = guess;
 
     // the reason prompt adapts to what they chose
-    const q = guess === 'ai'
-      ? '왜 AI(가짜)처럼 느껴졌나요?'
-      : '왜 진짜라고 생각했나요?';
+    const q = guess === 'ai' ? t('reasonAi') : t('reasonReal');
     $('#reason-question').innerHTML =
-      q + ' <span class="hint">(여러 개 선택 가능 · select any)</span>';
+      q + ' <span class="hint">(' + t('selectAny') + ')</span>';
 
     // turn on highlighting for this photo
     $('#photo-frame').classList.add('marking');
@@ -519,14 +593,14 @@
 
     if (result && result.ok && result.score) {
       markDone(); // lock out retakes once the data is safely saved
-      $('#score-num').textContent = result.score.correct;
-      $('#score-total').textContent = result.score.total;
+      $('#score-num').textContent = `${result.score.correct} / ${result.score.total}`;
       $('#score-card').hidden = false;
-      $('#done-message').textContent =
-        'Your responses have been recorded. Here is how you did:';
-    } else if (!result || !result.ok) {
-      $('#done-message').textContent =
-        'We could not reach the server to save your responses — but thank you for taking part.';
+      $('#done-message').textContent = t('recorded');
+    } else if (result && result.ok) {
+      markDone();
+      $('#done-message').textContent = t('recordedNoScore');
+    } else {
+      $('#done-message').textContent = t('failSave');
     }
 
     showScreen('screen-done');
