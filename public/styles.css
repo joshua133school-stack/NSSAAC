@@ -192,7 +192,6 @@ body {
 /* English line sitting under a Korean headline */
 .subtitle {
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(1.2rem, 3vw, 1.7rem);
   color: var(--ink-soft);
@@ -212,7 +211,7 @@ body {
   color: var(--ink-soft);
   margin: 0 0 1.4rem;
 }
-.lede em { font-family: var(--serif); font-style: italic; color: var(--ink); }
+.lede em { font-family: var(--serif); font-style: normal; color: var(--ink); }
 
 .muted { color: var(--ink-soft); line-height: 1.65; margin: 0 0 1.6rem; }
 .fineprint { font-size: 0.8rem; color: var(--ink-faint); margin-top: 1.4rem; }
