@@ -148,7 +148,6 @@ const CSV_COLUMNS = [
   'is_correct',
   'confidence',
   'reason_tags',
-  'reason_text',
   'has_annotation',
 ];
 const CSV_HEADER = CSV_COLUMNS.join(',');
@@ -285,7 +284,6 @@ app.post('/api/submit', async (req, res) => {
       isCorrect,
       r.confidence,
       flat(r.reasonTags),
-      r.reasonText,
       images[i] ? 'yes' : 'no',
     ];
   });

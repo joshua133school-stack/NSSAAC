@@ -62,7 +62,8 @@
 
         <div class="q-block">
           <label for="age" data-ko="나이는 어떻게 되시나요? <span class='req'>*</span>" data-en="What is your age? <span class='req'>*</span>">나이는 어떻게 되시나요? <span class="req">*</span></label>
-          <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />
+          <input type="number" id="age" name="age" min="14" max="120" inputmode="numeric" required />
+          <p class="q-error" id="age-error" hidden data-ko="너무 어려요 ㅜㅠ (만 14세 이상만 참여할 수 있어요)" data-en="Too young ㅜㅠ — you must be 14 or older to take part.">너무 어려요 ㅜㅠ (만 14세 이상만 참여할 수 있어요)</p>
           <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
         </div>
 
@@ -188,15 +189,16 @@
           </div>
 
           <div class="followup" id="followup" hidden>
-            <div class="field full">
+            <div class="fq field full">
               <label data-ko="얼마나 확신하나요? <span class='hint'>(1 = 찍었어요, 10 = 확실해요)</span>" data-en="How sure are you? <span class='hint'>(1 = guessing, 10 = certain)</span>">얼마나 확신하나요? <span class="hint">(1 = 찍었어요, 10 = 확실해요)</span></label>
               <div class="slider-wrap">
                 <input type="range" id="confidence" min="1" max="10" value="5" />
                 <output id="confidence-out">5</output>
               </div>
+              <button type="button" class="fq-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
             </div>
 
-            <div class="field full">
+            <div class="fq field full">
               <label id="reason-question">왜 그렇게 느꼈나요?</label>
               <div class="chips" id="reason-tags">
                 <button type="button" class="chip" data-tag="느낌이 묘해서" data-ko="느낌이 묘해서" data-en="Something feels off">느낌이 묘해서</button>
@@ -212,22 +214,18 @@
                 <button type="button" class="chip" data-tag="이상한 흔적이 보여서" data-ko="이상한 흔적이 보여서" data-en="Weird artifacts">이상한 흔적이 보여서</button>
                 <button type="button" class="chip" data-tag="그냥 느낌" data-ko="그냥 느낌" data-en="Just a feeling">그냥 느낌</button>
               </div>
+              <button type="button" class="fq-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
             </div>
 
-            <div class="field full">
-              <label data-ko="이상하게 보이는 부분을 칠해 주세요 <span class='hint'>(사진 위에 손가락·마우스로)</span>" data-en="Highlight the part that looks off <span class='hint'>(drag on the photo)</span>">이상하게 보이는 부분을 칠해 주세요 <span class="hint">(사진 위에 손가락·마우스로)</span></label>
+            <div class="fq field full">
+              <label data-ko="이상하게 보이는 부분을 칠해 주세요 <span class='hint'>(사진 위에 손가락·마우스로 · 선택)</span>" data-en="Highlight the part that looks off <span class='hint'>(drag on the photo · optional)</span>">이상하게 보이는 부분을 칠해 주세요 <span class="hint">(사진 위에 손가락·마우스로 · 선택)</span></label>
               <div class="mark-tools">
                 <span class="mark-hint" id="mark-hint" data-ko="사진 위를 드래그해서 표시하세요" data-en="Drag across the photo to mark it">사진 위를 드래그해서 표시하세요</span>
                 <button type="button" class="mark-clear" id="mark-clear" data-ko="지우기" data-en="Clear">지우기</button>
               </div>
             </div>
 
-            <div class="field full">
-              <label for="reasonText" data-ko="이 사진에 대해 더 하고 싶은 말이 있나요? <span class='hint'>(선택)</span>" data-en="Anything else about this photo? <span class='hint'>(optional)</span>">이 사진에 대해 더 하고 싶은 말이 있나요? <span class="hint">(선택)</span></label>
-              <textarea id="reasonText" rows="2" placeholder="한두 마디로…" data-ko-ph="한두 마디로…" data-en-ph="In a few words…"></textarea>
-            </div>
-
-            <button class="btn primary" id="next-btn" data-ko="다음 사진" data-en="Next photo">다음 사진</button>
+            <button class="btn primary fq-hidden" id="next-btn" data-ko="다음 사진" data-en="Next photo">다음 사진</button>
           </div>
         </div>
       </div>

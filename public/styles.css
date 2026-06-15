@@ -439,6 +439,12 @@ textarea { resize: vertical; }
 
 .q-final { min-height: 50vh; }
 
+.q-error {
+  color: var(--accent);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
 /* consent block */
 .consent-block {
   min-height: auto;
@@ -622,6 +628,37 @@ textarea { resize: vertical; }
 
 .followup { margin-top: 1.4rem; animation: fadeUp 0.5s ease both; }
 .followup .field { margin-bottom: 1rem; }
+
+/* one-at-a-time reveal of the follow-up questions */
+.fq { display: none; margin-bottom: 1.4rem; }
+.fq.fq-revealed {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  opacity: 0.4;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  animation: fqIn 0.45s ease;
+}
+.fq.fq-active { opacity: 1; }
+@keyframes fqIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 0.4; transform: translateY(0); }
+}
+.fq-next {
+  align-self: flex-start;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.45rem 1.2rem;
+  cursor: pointer;
+  margin-top: 0.4rem;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.fq-next:hover { background: rgba(22,21,26,0.05); transform: translateY(-1px); }
+#next-btn.fq-hidden { display: none; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; }
 .chip {

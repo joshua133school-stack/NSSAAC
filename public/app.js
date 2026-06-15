@@ -267,6 +267,20 @@
         return;
       }
     }
+    // legal minimum age (14+), per consent / PIPA
+    const ageInput = block.querySelector('#age');
+    if (ageInput) {
+      const v = Number(ageInput.value);
+      const errEl = block.querySelector('.q-error');
+      if (!v || v < 14) {
+        if (errEl) errEl.hidden = false;
+        block.classList.add('q-invalid');
+        ageInput.focus();
+        return;
+      }
+      if (errEl) errEl.hidden = true;
+    }
+
     block.classList.remove('q-invalid');
 
     syncConditionals(); // drop questions that no longer apply after this answer
@@ -349,7 +363,16 @@
     const age = $('#age').value.trim();
     const gender = $('#gender').value;
     if (!age || !gender) {
-      err.textContent = 'Please provide at least your age and gender.';
+      err.textContent = currentLang === 'en'
+        ? 'Please provide at least your age and gender.'
+        : '나이와 성별은 꼭 입력해 주세요.';
+      err.hidden = false;
+      return;
+    }
+    if (Number(age) < 14) {
+      err.textContent = currentLang === 'en'
+        ? 'You must be 14 or older to take part ㅜㅠ'
+        : '너무 어려요 ㅜㅠ (만 14세 이상만 참여할 수 있어요)';
       err.hidden = false;
       return;
     }
@@ -416,13 +439,50 @@
       });
     });
 
-    $('#reasonText').addEventListener('input', (e) => {
-      if (state.current) state.current.reasonText = e.target.value;
-    });
-
     $('#next-btn').addEventListener('click', nextPhoto);
 
     setupMarking();
+    setupFollowupFlow();
+  }
+
+  // ---- one-at-a-time follow-up reveal -------------------------------------
+
+  const followupState = { step: -1, steps: [] };
+
+  function setupFollowupFlow() {
+    followupState.steps = $$('#followup .fq');
+    $$('#followup .fq-next').forEach((btn) => {
+      btn.addEventListener('click', () => revealFollowupStep(followupState.step + 1));
+    });
+    // tapping a revealed step makes it the active (editable) one
+    followupState.steps.forEach((s) => {
+      s.addEventListener('pointerdown', () => {
+        if (s.classList.contains('fq-revealed')) {
+          followupState.steps.forEach((x) => x.classList.toggle('fq-active', x === s));
+        }
+      });
+    });
+  }
+
+  function resetFollowup() {
+    followupState.step = -1;
+    followupState.steps.forEach((s) => s.classList.remove('fq-revealed', 'fq-active'));
+    $('#next-btn').classList.add('fq-hidden');
+    $('#photo-frame').classList.remove('marking');
+  }
+
+  function revealFollowupStep(i) {
+    const steps = followupState.steps;
+    if (i < 0 || i >= steps.length) return;
+    followupState.step = i;
+    for (let k = 0; k <= i; k++) steps[k].classList.add('fq-revealed');
+    steps.forEach((s, idx) => s.classList.toggle('fq-active', idx === i));
+
+    if (i === steps.length - 1) {
+      $('#next-btn').classList.remove('fq-hidden');
+      $('#photo-frame').classList.add('marking'); // enable drawing at the highlight step
+    }
+    setTimeout(() => steps[i].scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
   }
 
   // ---- highlight ("mark the weird part") canvas ----------------------------
@@ -453,7 +513,7 @@
       mark.ctx.lineWidth = w;
       mark.ctx.lineCap = 'round';
       mark.ctx.lineJoin = 'round';
-      mark.ctx.strokeStyle = 'rgba(255, 70, 45, 0.45)';
+      mark.ctx.strokeStyle = 'rgba(55, 55, 60, 0.4)'; // semi-transparent grey
       mark.ctx.lineTo(p.x, p.y);
       mark.ctx.stroke();
       e.preventDefault();
@@ -533,7 +593,6 @@
       guess: null,
       confidence: 5,
       reasonTags: [],
-      reasonText: '',
       annotation: null,
     };
 
@@ -555,8 +614,8 @@
     $$('#reason-tags .chip').forEach((c) => c.classList.remove('active'));
     $('#confidence').value = 5;
     $('#confidence-out').textContent = '5';
-    $('#reasonText').value = '';
     $('#followup').hidden = true;
+    resetFollowup();
 
     // reset the highlight layer for the new photo
     frame.classList.remove('marking');
@@ -574,11 +633,9 @@
     $('#reason-question').innerHTML =
       q + ' <span class="hint">(' + t('selectAny') + ')</span>';
 
-    // turn on highlighting for this photo
-    $('#photo-frame').classList.add('marking');
-
+    // reveal the follow-up one question at a time
     $('#followup').hidden = false;
-    $('#followup').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    revealFollowupStep(0);
   }
 
   function syncReasonTags() {
@@ -589,7 +646,6 @@
     if (!state.current.guess) return; // require a choice
 
     state.current.confidence = Number($('#confidence').value);
-    state.current.reasonText = $('#reasonText').value.trim();
     syncReasonTags();
     state.current.annotation = buildAnnotation();
     state.responses.push(state.current);
