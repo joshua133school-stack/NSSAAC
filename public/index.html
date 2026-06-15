@@ -46,6 +46,22 @@
     <section class="screen" id="screen-demographics">
       <form id="demographics-form" class="q-flow" novalidate>
 
+        <div class="q-block consent-block">
+          <label class="consent-title" data-ko="연구 참여 및 개인정보 동의" data-en="Consent to participate">연구 참여 및 개인정보 동의</label>
+          <div class="consent-text" data-ko="<p><strong>목적</strong> · 이 설문은 학교 통계 프로젝트로, 사람들이 AI가 만든 이미지와 실제 사진을 구별할 수 있는지 연구합니다.</p><p><strong>수집 항목</strong> · 나이, 성별, 학력, 지역, 직업/전공 등 인구통계와 설문 응답. 이름·이메일 등 신원 정보는 수집하지 않습니다.</p><p><strong>보유 기간</strong> · 응답은 익명으로 저장되며, 연구 종료 후 1년 이내에 파기됩니다.</p><p><strong>자발성 · 철회권</strong> · 참여는 자발적이며, 동의를 거부해도 어떠한 불이익이 없습니다. 제출 전에는 언제든 창을 닫아 참여를 중단할 수 있습니다. 응답은 익명이므로 제출 후에는 개별 철회가 어려울 수 있습니다.</p><p><strong>문의</strong> · (연구 담당자 이메일을 입력하세요)</p>" data-en="<p><strong>Purpose</strong> · This is a school statistics project studying whether people can tell AI-generated images from real photographs.</p><p><strong>Data collected</strong> · Age, gender, education, region, field of work/study, and your answers. No names, emails, or identifying information are collected.</p><p><strong>Retention</strong> · Responses are stored anonymously and deleted within one year of the study's completion.</p><p><strong>Voluntary &amp; right to withdraw</strong> · Taking part is voluntary and there is no penalty for declining. You may stop at any time before submitting by closing the window. Because responses are anonymous, individual withdrawal may not be possible after submission.</p><p><strong>Contact</strong> · (add the researcher's email here)</p>">
+            <p><strong>목적</strong> · 이 설문은 학교 통계 프로젝트로, 사람들이 AI가 만든 이미지와 실제 사진을 구별할 수 있는지 연구합니다.</p>
+            <p><strong>수집 항목</strong> · 나이, 성별, 학력, 지역, 직업/전공 등 인구통계와 설문 응답. 이름·이메일 등 신원 정보는 수집하지 않습니다.</p>
+            <p><strong>보유 기간</strong> · 응답은 익명으로 저장되며, 연구 종료 후 1년 이내에 파기됩니다.</p>
+            <p><strong>자발성 · 철회권</strong> · 참여는 자발적이며, 동의를 거부해도 어떠한 불이익이 없습니다. 제출 전에는 언제든 창을 닫아 참여를 중단할 수 있습니다. 응답은 익명이므로 제출 후에는 개별 철회가 어려울 수 있습니다.</p>
+            <p><strong>문의</strong> · (연구 담당자 이메일을 입력하세요)</p>
+          </div>
+          <label class="consent-check">
+            <input type="checkbox" id="consent" required />
+            <span data-ko="위 내용을 읽었으며, 만 14세 이상(또는 보호자 동의)이고 자발적으로 참여하는 데 동의합니다." data-en="I have read the above, am 14 or older (or have guardian consent), and voluntarily agree to take part.">위 내용을 읽었으며, 만 14세 이상(또는 보호자 동의)이고 자발적으로 참여하는 데 동의합니다.</span>
+          </label>
+          <button type="button" class="q-next" data-ko="동의하고 시작 ↓" data-en="Agree &amp; start ↓">동의하고 시작 ↓</button>
+        </div>
+
         <div class="q-block">
           <label for="age" data-ko="나이는 어떻게 되시나요? <span class='req'>*</span>" data-en="What is your age? <span class='req'>*</span>">나이는 어떻게 되시나요? <span class="req">*</span></label>
           <input type="number" id="age" name="age" min="5" max="120" inputmode="numeric" required />

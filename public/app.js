@@ -77,14 +77,17 @@
 
   // -------------------------------------------------------------- intro
 
-  // One entry per person (per browser). Not bulletproof — a different
-  // browser/device or cleared storage can retake — but it stops casual repeats.
+  // One entry per person (per browser). Disabled for now — flip ONE_CHANCE to
+  // true to re-enable the lockout later.
+  const ONE_CHANCE = false;
   const DONE_KEY = 'nssaac_completed';
 
   function alreadyDone() {
+    if (!ONE_CHANCE) return false;
     try { return !!localStorage.getItem(DONE_KEY); } catch (e) { return false; }
   }
   function markDone() {
+    if (!ONE_CHANCE) return;
     try { localStorage.setItem(DONE_KEY, new Date().toISOString()); } catch (e) {}
   }
 
@@ -234,10 +237,13 @@
   function advanceSurvey(block) {
     // required questions must be answered before the next appears
     const req = block.querySelector('[required]');
-    if (req && !req.value) {
-      block.classList.add('q-invalid');
-      if (req.focus) req.focus();
-      return;
+    if (req) {
+      const answered = req.type === 'checkbox' ? req.checked : !!req.value;
+      if (!answered) {
+        block.classList.add('q-invalid');
+        if (req.focus) req.focus();
+        return;
+      }
     }
     block.classList.remove('q-invalid');
 

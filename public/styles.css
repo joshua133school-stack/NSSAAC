@@ -438,6 +438,46 @@ textarea { resize: vertical; }
 
 .q-final { min-height: 50vh; }
 
+/* consent block */
+.consent-block {
+  min-height: auto;
+  justify-content: flex-start;
+  padding: 12vh 0 6vh;
+}
+.consent-title {
+  font-family: var(--serif);
+  font-size: clamp(1.4rem, 3.4vw, 2rem);
+}
+.consent-text {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  background: var(--card);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.3rem;
+}
+.consent-text p { margin: 0 0 0.7rem; }
+.consent-text p:last-child { margin-bottom: 0; }
+.consent-text strong { color: var(--ink); }
+.consent-check {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  cursor: pointer;
+}
+.consent-check input {
+  margin-top: 0.2rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: none;
+  accent-color: var(--accent);
+}
+.consent-block.q-invalid .consent-check { color: var(--accent); }
+
 /* ---------------------------------------------------------------- quiz */
 
 #screen-quiz { flex-direction: column; gap: 1.4rem; }

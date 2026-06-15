@@ -239,6 +239,8 @@ app.get('/api/status', (req, res) => {
     ai_photos: listImages(PHOTO_DIRS.ai).length,
     real_photos: listImages(PHOTO_DIRS.real).length,
     photos_per_session: PHOTOS_PER_SESSION,
+    // true once SHEET_WEBHOOK_URL is set on the host (does not reveal the URL)
+    sheet_configured: !!SHEET_WEBHOOK_URL,
   });
 });
 
