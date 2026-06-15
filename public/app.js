@@ -234,6 +234,28 @@
     window.addEventListener('resize', onScroll);
   }
 
+  // A conditional block (data-show-if="fieldId:Yes") only counts when its
+  // controlling field has one of the listed values.
+  function isEligible(block) {
+    const cond = block.dataset.showIf;
+    if (!cond) return true;
+    const [field, valsStr] = cond.split(':');
+    const el = document.getElementById(field);
+    return !!el && valsStr.split('|').includes(el.value);
+  }
+
+  // Hide + clear any revealed conditional questions that no longer apply.
+  function syncConditionals() {
+    surveyBlocks.forEach((b) => {
+      if (!b.dataset.showIf || isEligible(b)) return;
+      if (b.classList.contains('revealed')) {
+        b.classList.remove('revealed', 'focused');
+        b.querySelectorAll('select').forEach((s) => { s.value = ''; });
+        b.querySelectorAll('input[type="range"]').forEach((r) => { r.value = 5; });
+      }
+    });
+  }
+
   function advanceSurvey(block) {
     // required questions must be answered before the next appears
     const req = block.querySelector('[required]');
@@ -247,8 +269,12 @@
     }
     block.classList.remove('q-invalid');
 
-    const idx = surveyBlocks.indexOf(block);
-    const next = surveyBlocks[idx + 1];
+    syncConditionals(); // drop questions that no longer apply after this answer
+
+    // reveal the next *eligible* question, skipping ones whose condition fails
+    let idx = surveyBlocks.indexOf(block) + 1;
+    while (idx < surveyBlocks.length && !isEligible(surveyBlocks[idx])) idx++;
+    const next = surveyBlocks[idx];
     if (!next || next.classList.contains('revealed')) return; // don't yank when editing
     next.classList.add('revealed');
     setTimeout(() => scrollBlockToCentre(next), 80);
@@ -329,19 +355,19 @@
     }
     err.hidden = true;
 
+    const aiUsed = $('#aiUsedBefore').value;
+    const seenAi = $('#seenAiImages').value;
     state.demographics = {
       age: Number(age),
       gender,
       education: $('#education').value,
-      country: $('#country').value.trim(),
       occupationField: $('#occupationField').value,
-      nativeEnglish: $('#nativeEnglish').value,
-      aiUsedBefore: $('#aiUsedBefore').value,
-      aiUseFrequency: $('#aiUseFrequency').value,
-      aiTypesUsed: $$('#aiTypesUsed input:checked').map((c) => c.value),
-      imageAiExperience: $('#imageAiExperience').value,
-      selfRatedAbility: Number($('#selfRatedAbility').value),
-      visionCorrected: $('#visionCorrected').value,
+      aiUsedBefore: aiUsed,
+      // these only apply when the controlling answer was "Yes"
+      aiUseFrequency: aiUsed === 'Yes' ? $('#aiUseFrequency').value : '',
+      aiImageGenUsed: aiUsed === 'Yes' ? $('#aiImageGenUsed').value : '',
+      seenAiImages: seenAi,
+      selfRatedAbility: seenAi === 'Yes' ? Number($('#selfRatedAbility').value) : '',
       overallComments: '',
     };
 

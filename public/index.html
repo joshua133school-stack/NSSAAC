@@ -93,12 +93,6 @@
         </div>
 
         <div class="q-block">
-          <label for="country" data-ko="어느 나라 / 지역에 계신가요?" data-en="Which country or region are you in?">어느 나라 / 지역에 계신가요?</label>
-          <input type="text" id="country" name="country" placeholder="예: 대한민국" data-ko-ph="예: 대한민국" data-en-ph="e.g. South Korea" autocomplete="country-name" />
-          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
-        </div>
-
-        <div class="q-block">
           <label for="occupationField" data-ko="어떤 분야에서 일하거나 공부하시나요?" data-en="What field do you work or study in?">어떤 분야에서 일하거나 공부하시나요?</label>
           <select id="occupationField" name="occupationField">
             <option value="" disabled selected>선택…</option>
@@ -116,80 +110,50 @@
         </div>
 
         <div class="q-block">
-          <label for="nativeEnglish" data-ko="영어가 모국어인가요?" data-en="Is English your first language?">영어가 모국어인가요?</label>
-          <select id="nativeEnglish" name="nativeEnglish">
+          <label for="aiUsedBefore" data-ko="AI 도구를 사용해 본 적 있나요?" data-en="Have you used AI tools before?">AI 도구를 사용해 본 적 있나요?</label>
+          <select id="aiUsedBefore" name="aiUsedBefore">
             <option value="" disabled selected>선택…</option>
             <option value="Yes">예</option>
             <option value="No">아니요</option>
           </select>
         </div>
 
-        <div class="q-block">
-          <label for="aiUsedBefore" data-ko="AI 도구를 사용해 본 적 있나요?" data-en="Have you used AI tools before?">AI 도구를 사용해 본 적 있나요?</label>
-          <select id="aiUsedBefore" name="aiUsedBefore">
-            <option value="" disabled selected>선택…</option>
-            <option value="Yes, often">자주 사용함</option>
-            <option value="Yes, occasionally">가끔 사용함</option>
-            <option value="Once or twice">한두 번</option>
-            <option value="Never">전혀</option>
-            <option value="Not sure">잘 모르겠음</option>
-          </select>
-        </div>
-
-        <div class="q-block">
-          <label for="aiUseFrequency" data-ko="AI를 얼마나 자주 사용하나요?" data-en="How often do you use AI tools?">AI를 얼마나 자주 사용하나요?</label>
+        <div class="q-block" data-show-if="aiUsedBefore:Yes">
+          <label for="aiUseFrequency" data-ko="AI를 얼마나 자주 사용하나요?" data-en="How often do you use AI?">AI를 얼마나 자주 사용하나요?</label>
           <select id="aiUseFrequency" name="aiUseFrequency">
             <option value="" disabled selected>선택…</option>
             <option value="Daily">매일</option>
             <option value="Weekly">매주</option>
             <option value="Monthly">매달</option>
             <option value="Rarely">드물게</option>
-            <option value="Never">전혀</option>
           </select>
         </div>
 
-        <div class="q-block">
-          <label data-ko="어떤 종류의 AI를 사용해 봤나요? <span class='hint'>(여러 개 선택)</span>" data-en="Which kinds of AI have you used? <span class='hint'>(select all)</span>">어떤 종류의 AI를 사용해 봤나요? <span class="hint">(여러 개 선택)</span></label>
-          <div class="checks" id="aiTypesUsed">
-            <label class="check"><input type="checkbox" value="Text / chatbots (e.g. ChatGPT)" /><span data-ko="텍스트 · 챗봇" data-en="Text / chatbots">텍스트 · 챗봇</span></label>
-            <label class="check"><input type="checkbox" value="Image generation (e.g. Midjourney, DALL·E)" /><span data-ko="이미지 생성" data-en="Image generation">이미지 생성</span></label>
-            <label class="check"><input type="checkbox" value="Photo editing / filters" /><span data-ko="사진 편집 · 필터" data-en="Photo editing / filters">사진 편집 · 필터</span></label>
-            <label class="check"><input type="checkbox" value="Voice / music" /><span data-ko="음성 · 음악" data-en="Voice / music">음성 · 음악</span></label>
-            <label class="check"><input type="checkbox" value="Video generation" /><span data-ko="영상 생성" data-en="Video generation">영상 생성</span></label>
-            <label class="check"><input type="checkbox" value="Coding assistants" /><span data-ko="코딩 도우미" data-en="Coding assistants">코딩 도우미</span></label>
-            <label class="check"><input type="checkbox" value="None" /><span data-ko="없음" data-en="None">없음</span></label>
-          </div>
-          <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
-        </div>
-
-        <div class="q-block">
-          <label for="imageAiExperience" data-ko="AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?" data-en="How familiar are you with AI-generated <em>images</em>?">AI가 만든 <em>이미지</em>에 얼마나 익숙한가요?</label>
-          <select id="imageAiExperience" name="imageAiExperience">
+        <div class="q-block" data-show-if="aiUsedBefore:Yes">
+          <label for="aiImageGenUsed" data-ko="AI 이미지 생성을 사용해 본 적 있나요?" data-en="Have you used AI image generation before?">AI 이미지 생성을 사용해 본 적 있나요?</label>
+          <select id="aiImageGenUsed" name="aiImageGenUsed">
             <option value="" disabled selected>선택…</option>
-            <option value="Very familiar — I make them">아주 익숙함 — 직접 만듦</option>
-            <option value="Somewhat — I've seen many">어느 정도 — 많이 봄</option>
-            <option value="A little">조금</option>
-            <option value="Not at all">전혀</option>
+            <option value="Yes">예</option>
+            <option value="No">아니요</option>
           </select>
         </div>
 
         <div class="q-block">
+          <label for="seenAiImages" data-ko="AI가 만든 사진을 본 적 있나요?" data-en="Have you seen AI-generated pictures before?">AI가 만든 사진을 본 적 있나요?</label>
+          <select id="seenAiImages" name="seenAiImages">
+            <option value="" disabled selected>선택…</option>
+            <option value="Yes">예</option>
+            <option value="No">아니요</option>
+          </select>
+        </div>
+
+        <div class="q-block" data-show-if="seenAiImages:Yes">
           <label for="selfRatedAbility" data-ko="AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class='hint'>(1 = 전혀, 10 = 전문가)</span>" data-en="How good are you at spotting AI images? <span class='hint'>(1 = no idea, 10 = expert)</span>">AI 이미지를 얼마나 잘 구별한다고 생각하나요? <span class="hint">(1 = 전혀, 10 = 전문가)</span></label>
           <div class="slider-wrap">
             <input type="range" id="selfRatedAbility" name="selfRatedAbility" min="1" max="10" value="5" />
             <output id="selfRatedAbility-out">5</output>
           </div>
           <button type="button" class="q-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
-        </div>
-
-        <div class="q-block">
-          <label for="visionCorrected" data-ko="(필요하다면) 시력 교정을 한 상태로 보고 있나요?" data-en="Are you viewing with corrected vision (if you need it)?">(필요하다면) 시력 교정을 한 상태로 보고 있나요?</label>
-          <select id="visionCorrected" name="visionCorrected">
-            <option value="" disabled selected>선택…</option>
-            <option value="Yes">예</option>
-            <option value="No">아니요</option>
-            <option value="I don't need correction">교정이 필요 없음</option>
-          </select>
         </div>
 
         <div class="q-block q-final">
