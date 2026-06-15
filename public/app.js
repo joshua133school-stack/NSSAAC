@@ -104,19 +104,40 @@
     bindSlider('selfRatedAbility', 'selfRatedAbility-out');
 
     runStagger($('#screen-intro'));
+    startIntroCycle();
 
     $('#start-btn').addEventListener('click', () => showScreen('screen-demographics'));
-
-    // fetch inventory just to show the count and detect empty state
-    try {
-      const status = await fetch('/api/status').then((r) => r.json());
-      $('#intro-count').textContent = Math.min(
-        status.photos_per_session,
-        status.ai_photos + status.real_photos
-      ) || status.photos_per_session;
-    } catch (e) { /* non-fatal */ }
-
     $('#demographics-form').addEventListener('submit', onDemographicsSubmit);
+  }
+
+  // Big intro headline that slowly cycles through a few Korean lines.
+  const INTRO_MESSAGES = [
+    '안녕하세요, 통계 실험에 참여해주셔서 감사합니다!',
+    '혹시 기계가 만든 이미지를 진짜 사진과 구별할 수 있으신가요?',
+    '아래 시작 버튼을 눌러주세요!',
+  ];
+
+  function startIntroCycle() {
+    const el = document.getElementById('intro-cycle');
+    if (!el) return;
+    let i = 0;
+    const HOLD = 2500; // how long each line stays (your 2.5s)
+    const FADE = 700;  // matches the CSS transition
+    const show = () => {
+      // stop the loop once they've left the intro screen
+      const intro = document.getElementById('screen-intro');
+      if (!intro || !intro.classList.contains('is-active')) return;
+      el.textContent = INTRO_MESSAGES[i];
+      el.classList.add('visible');
+      setTimeout(() => {
+        el.classList.remove('visible');
+        setTimeout(() => {
+          i = (i + 1) % INTRO_MESSAGES.length;
+          show();
+        }, FADE);
+      }, HOLD);
+    };
+    show();
   }
 
   function bindSlider(inputId, outId) {
