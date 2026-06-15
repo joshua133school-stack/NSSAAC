@@ -40,6 +40,7 @@ body {
   inset: 0;
   z-index: -1;
   overflow: hidden;
+  filter: grayscale(1);      /* monotone background */
   background:
     radial-gradient(120% 120% at 80% -10%, var(--paper-warm), var(--paper) 60%);
 }
