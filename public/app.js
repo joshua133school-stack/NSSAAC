@@ -415,6 +415,7 @@
     state.photos = data.photos;
     state.index = 0;
     state.responses = [];
+    advancing = false;
 
     wireQuizControls();
     showScreen('screen-quiz');
@@ -516,7 +517,7 @@
       mark.ctx.lineWidth = w;
       mark.ctx.lineCap = 'round';
       mark.ctx.lineJoin = 'round';
-      mark.ctx.strokeStyle = 'rgba(55, 55, 60, 0.4)'; // semi-transparent grey
+      mark.ctx.strokeStyle = 'rgba(95, 95, 102, 0.62)'; // opaque-ish grey highlight
       mark.ctx.lineTo(p.x, p.y);
       mark.ctx.stroke();
       e.preventDefault();
@@ -599,8 +600,8 @@
       annotation: null,
     };
 
-    // progress
-    const n = state.index + 1;
+    // progress (clamped so it can never read past the total)
+    const n = Math.min(state.index + 1, state.photos.length);
     $('#quiz-counter').textContent = `${n} / ${state.photos.length}`;
     $('#quiz-bar').style.width = `${(state.index / state.photos.length) * 100}%`;
 
@@ -645,8 +646,13 @@
     state.current.reasonTags = $$('#reason-tags .chip.active').map((c) => c.dataset.tag);
   }
 
+  let advancing = false;
   function nextPhoto() {
-    if (!state.current.guess) return; // require a choice
+    // guard against rapid taps pushing the counter past the end
+    if (advancing) return;
+    if (!state.current || !state.current.guess) return;
+    if (state.index >= state.photos.length) return;
+    advancing = true;
 
     state.current.confidence = Number($('#confidence').value);
     syncReasonTags();
@@ -655,9 +661,10 @@
 
     state.index += 1;
     if (state.index >= state.photos.length) {
-      finish();
+      finish();             // leave `advancing` locked so no further advances
     } else {
       renderPhoto();
+      advancing = false;
     }
   }
 
