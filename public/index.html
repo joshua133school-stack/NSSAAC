@@ -190,29 +190,49 @@
 
           <div class="followup" id="followup" hidden>
             <div class="fq field full">
-              <label data-ko="얼마나 확신하나요? <span class='hint'>(1 = 찍었어요, 10 = 확실해요)</span>" data-en="How sure are you? <span class='hint'>(1 = guessing, 10 = certain)</span>">얼마나 확신하나요? <span class="hint">(1 = 찍었어요, 10 = 확실해요)</span></label>
+              <label data-ko="얼마나 확신하나요?" data-en="How sure are you?">얼마나 확신하나요?</label>
               <div class="slider-wrap">
                 <input type="range" id="confidence" min="1" max="10" value="5" />
                 <output id="confidence-out">5</output>
+              </div>
+              <div class="scale-ends">
+                <span data-ko="1 · 전혀 모르겠어요" data-en="1 · No idea">1 · 전혀 모르겠어요</span>
+                <span data-ko="10 · 완전 확실해요" data-en="10 · Totally sure">10 · 완전 확실해요</span>
               </div>
               <button type="button" class="fq-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
             </div>
 
             <div class="fq field full">
               <label id="reason-question">왜 그렇게 느꼈나요?</label>
-              <div class="chips" id="reason-tags">
-                <button type="button" class="chip" data-tag="느낌이 묘해서" data-ko="느낌이 묘해서" data-en="Something feels off">느낌이 묘해서</button>
-                <button type="button" class="chip" data-tag="빛·그림자가 어색해서" data-ko="빛·그림자가 어색해서" data-en="Lighting / shadows">빛·그림자가 어색해서</button>
-                <button type="button" class="chip" data-tag="피부·얼굴이 이상해서" data-ko="피부·얼굴이 이상해서" data-en="Skin / face">피부·얼굴이 이상해서</button>
-                <button type="button" class="chip" data-tag="손·손가락이 이상해서" data-ko="손·손가락이 이상해서" data-en="Hands / fingers">손·손가락이 이상해서</button>
-                <button type="button" class="chip" data-tag="눈·치아가 이상해서" data-ko="눈·치아가 이상해서" data-en="Eyes / teeth">눈·치아가 이상해서</button>
-                <button type="button" class="chip" data-tag="글자가 깨져서" data-ko="글자가 깨져서" data-en="Garbled text">글자가 깨져서</button>
-                <button type="button" class="chip" data-tag="배경이 이상해서" data-ko="배경이 이상해서" data-en="Background details">배경이 이상해서</button>
-                <button type="button" class="chip" data-tag="질감·무늬가 이상해서" data-ko="질감·무늬가 이상해서" data-en="Textures / patterns">질감·무늬가 이상해서</button>
-                <button type="button" class="chip" data-tag="너무 완벽해서" data-ko="너무 완벽해서" data-en="Too perfect">너무 완벽해서</button>
-                <button type="button" class="chip" data-tag="너무 진짜 같아서" data-ko="너무 진짜 같아서" data-en="Too realistic">너무 진짜 같아서</button>
-                <button type="button" class="chip" data-tag="이상한 흔적이 보여서" data-ko="이상한 흔적이 보여서" data-en="Weird artifacts">이상한 흔적이 보여서</button>
-                <button type="button" class="chip" data-tag="그냥 느낌" data-ko="그냥 느낌" data-en="Just a feeling">그냥 느낌</button>
+              <div id="reason-tags">
+                <!-- shown when they chose "AI가 만든 사진" -->
+                <div class="chips reason-set" data-set="ai" hidden>
+                  <button type="button" class="chip" data-tag="느낌이 묘해서" data-ko="느낌이 묘해서" data-en="Something feels off">느낌이 묘해서</button>
+                  <button type="button" class="chip" data-tag="빛·그림자가 어색해서" data-ko="빛·그림자가 어색해서" data-en="Lighting / shadows off">빛·그림자가 어색해서</button>
+                  <button type="button" class="chip" data-tag="피부·얼굴이 이상해서" data-ko="피부·얼굴이 이상해서" data-en="Skin / face wrong">피부·얼굴이 이상해서</button>
+                  <button type="button" class="chip" data-tag="손·손가락이 이상해서" data-ko="손·손가락이 이상해서" data-en="Hands / fingers wrong">손·손가락이 이상해서</button>
+                  <button type="button" class="chip" data-tag="눈·치아가 이상해서" data-ko="눈·치아가 이상해서" data-en="Eyes / teeth wrong">눈·치아가 이상해서</button>
+                  <button type="button" class="chip" data-tag="글자가 깨져서" data-ko="글자가 깨져서" data-en="Garbled text">글자가 깨져서</button>
+                  <button type="button" class="chip" data-tag="배경이 이상해서" data-ko="배경이 이상해서" data-en="Background off">배경이 이상해서</button>
+                  <button type="button" class="chip" data-tag="질감·무늬가 이상해서" data-ko="질감·무늬가 이상해서" data-en="Textures / patterns off">질감·무늬가 이상해서</button>
+                  <button type="button" class="chip" data-tag="너무 완벽해서" data-ko="너무 완벽해서" data-en="Too perfect">너무 완벽해서</button>
+                  <button type="button" class="chip" data-tag="이상한 흔적이 보여서" data-ko="이상한 흔적이 보여서" data-en="Weird artifacts">이상한 흔적이 보여서</button>
+                  <button type="button" class="chip" data-tag="그냥 느낌(AI)" data-ko="그냥 느낌" data-en="Just a feeling">그냥 느낌</button>
+                </div>
+                <!-- shown when they chose "사람이 찍은 사진" -->
+                <div class="chips reason-set" data-set="real" hidden>
+                  <button type="button" class="chip" data-tag="자연스러워서" data-ko="자연스러워서" data-en="Looks natural">자연스러워서</button>
+                  <button type="button" class="chip" data-tag="빛·그림자가 자연스러워서" data-ko="빛·그림자가 자연스러워서" data-en="Natural lighting">빛·그림자가 자연스러워서</button>
+                  <button type="button" class="chip" data-tag="피부·얼굴이 자연스러워서" data-ko="피부·얼굴이 자연스러워서" data-en="Natural skin / face">피부·얼굴이 자연스러워서</button>
+                  <button type="button" class="chip" data-tag="손·손가락이 정상이어서" data-ko="손·손가락이 정상이어서" data-en="Hands look right">손·손가락이 정상이어서</button>
+                  <button type="button" class="chip" data-tag="디테일이 사실적이어서" data-ko="디테일이 사실적이어서" data-en="Realistic detail">디테일이 사실적이어서</button>
+                  <button type="button" class="chip" data-tag="질감이 사실적이어서" data-ko="질감이 사실적이어서" data-en="Realistic texture">질감이 사실적이어서</button>
+                  <button type="button" class="chip" data-tag="배경이 자연스러워서" data-ko="배경이 자연스러워서" data-en="Natural background">배경이 자연스러워서</button>
+                  <button type="button" class="chip" data-tag="결함·흠이 있어서" data-ko="결함·흠이 있어서" data-en="Has natural flaws">결함·흠이 있어서</button>
+                  <button type="button" class="chip" data-tag="평범해 보여서" data-ko="평범해 보여서" data-en="Looks ordinary">평범해 보여서</button>
+                  <button type="button" class="chip" data-tag="구도가 자연스러워서" data-ko="구도가 자연스러워서" data-en="Natural composition">구도가 자연스러워서</button>
+                  <button type="button" class="chip" data-tag="그냥 느낌(진짜)" data-ko="그냥 느낌" data-en="Just a feeling">그냥 느낌</button>
+                </div>
               </div>
               <button type="button" class="fq-next" data-ko="다음 ↓" data-en="Next ↓">다음 ↓</button>
             </div>

@@ -616,6 +616,7 @@
     // reset controls
     $$('.choice').forEach((b) => b.classList.remove('selected'));
     $$('#reason-tags .chip').forEach((c) => c.classList.remove('active'));
+    $$('#reason-tags .reason-set').forEach((s) => { s.hidden = true; });
     $('#confidence').value = 5;
     $('#confidence-out').textContent = '5';
     $('#followup').hidden = true;
@@ -636,6 +637,12 @@
     const q = guess === 'ai' ? t('reasonAi') : t('reasonReal');
     $('#reason-question').innerHTML =
       q + ' <span class="hint">(' + t('selectAny') + ')</span>';
+
+    // show only the reason set matching the choice, and clear all chips
+    $$('#reason-tags .reason-set').forEach((set) => {
+      set.hidden = set.dataset.set !== guess;
+    });
+    $$('#reason-tags .chip').forEach((c) => c.classList.remove('active'));
 
     // reveal the follow-up one question at a time
     $('#followup').hidden = false;

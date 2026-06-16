@@ -337,6 +337,14 @@ textarea { resize: vertical; }
 
 .slider-wrap { display: flex; align-items: center; gap: 1rem; }
 .slider-wrap input[type="range"] { flex: 1; accent-color: var(--accent); }
+.scale-ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+  margin-top: 0.1rem;
+}
 .slider-wrap output {
   font-family: var(--serif);
   font-size: 1.4rem;
