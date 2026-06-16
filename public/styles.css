@@ -167,6 +167,7 @@ body {
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 .cycle-text.visible { opacity: 1; transform: translateY(0); }
+.cycle-text .hl-num { color: var(--accent); font-weight: 600; }
 
 /* language picker */
 .lang-row {

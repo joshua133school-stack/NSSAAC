@@ -696,19 +696,56 @@
       result = null;
     }
 
-    if (result && result.ok && result.score) {
-      markDone(); // lock out retakes once the data is safely saved
-      $('#score-num').textContent = `${result.score.correct} / ${result.score.total}`;
-      $('#score-card').hidden = false;
-      $('#done-message').textContent = t('recorded');
-    } else if (result && result.ok) {
-      markDone();
-      $('#done-message').textContent = t('recordedNoScore');
-    } else {
-      $('#done-message').textContent = t('failSave');
-    }
+    const ok = !!(result && result.ok);
+    if (ok) markDone();
+
+    const correct = state.responses.filter(
+      (r) => r.guess && r.truth && r.guess === r.truth).length;
+    const total = state.responses.length;
 
     showScreen('screen-done');
+    startDoneCycle(buildDoneMessages(ok, correct, total));
+  }
+
+  function buildDoneMessages(ok, correct, total) {
+    const num = `<span class="hl-num">${correct}</span>`;
+    if (currentLang === 'en') {
+      return [
+        ok ? 'Your responses have been recorded.' : "We couldn't save your responses — sorry.",
+        'Thank you for taking part in the survey.',
+        `You got ${num} out of ${total} correct.`,
+        'Each person can take part only once.',
+        'Please share the site with people around you.',
+      ];
+    }
+    return [
+      ok ? '응답이 기록되었습니다.' : '응답을 저장하지 못했어요. 죄송해요.',
+      '설문에 참여해 주셔서 감사합니다.',
+      `총 ${total}문제 중 ${num}문제를 맞추셨어요.`,
+      '한 사람당 한 번만 참여할 수 있어요.',
+      '주변 사람들에게 사이트를 공유해 주세요.',
+    ];
+  }
+
+  let doneCycleRunning = false;
+  function startDoneCycle(msgs) {
+    const el = document.getElementById('done-cycle');
+    if (!el || doneCycleRunning) return;
+    doneCycleRunning = true;
+    let i = 0;
+    const HOLD = 3000; // 3s per line
+    const FADE = 700;
+    const show = () => {
+      const screen = document.getElementById('screen-done');
+      if (!screen || !screen.classList.contains('is-active')) { doneCycleRunning = false; return; }
+      el.innerHTML = msgs[i];
+      el.classList.add('visible');
+      setTimeout(() => {
+        el.classList.remove('visible');
+        setTimeout(() => { i = (i + 1) % msgs.length; show(); }, FADE);
+      }, HOLD);
+    };
+    show();
   }
 
   // ------------------------------------------------------------------ go
