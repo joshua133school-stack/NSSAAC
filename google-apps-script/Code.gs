@@ -77,6 +77,7 @@ function doPost(e) {
     for (let i = 0; i < images.length; i++) {
       const b64 = images[i];
       if (!b64) continue;
+      const cell = sheet.getRange(start + i, imgCol);
       try {
         const blob = Utilities.newBlob(
           Utilities.base64Decode(b64), 'image/jpeg', 'mark_' + (start + i) + '.jpg');
@@ -87,11 +88,12 @@ function doPost(e) {
         oi.setHeight(h).setWidth(Math.round(h * ratio));
         pasted++;
       } catch (imgErr) {
-        // Never fail a whole submission because one image couldn't paste.
+        // Make failures visible instead of silently dropping the image.
+        cell.setValue('image error: ' + String(imgErr));
       }
     }
 
-    return json({ ok: true, added: rows.length, images: pasted });
+    return json({ ok: true, version: 'v2-images', added: rows.length, images: pasted });
   } catch (err) {
     return json({ ok: false, error: String(err) });
   } finally {
@@ -99,9 +101,10 @@ function doPost(e) {
   }
 }
 
-// A quick sanity check you can open in a browser (shows the script is live).
+// A quick sanity check you can open in a browser. The "version" confirms which
+// code is actually deployed — it must say "v2-images" for highlight images.
 function doGet() {
-  return json({ ok: true, message: 'NSSAAC results collector is running.' });
+  return json({ ok: true, version: 'v2-images', message: 'NSSAAC results collector is running.' });
 }
 
 function json(obj) {
