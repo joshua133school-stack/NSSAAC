@@ -148,7 +148,6 @@ const CSV_COLUMNS = [
   'is_correct',
   'confidence',
   'reason_tags',
-  'reason_other',
 ];
 const CSV_HEADER = CSV_COLUMNS.join(',');
 
@@ -275,8 +274,9 @@ app.post('/api/submit', async (req, res) => {
       guess,
       isCorrect,
       r.confidence,
-      flat(r.reasonTags),
-      r.reasonOther,
+      // tags + the optional "기타" free text, all in one column
+      [flat(r.reasonTags), r.reasonOther ? '기타: ' + r.reasonOther : '']
+        .filter(Boolean).join('; '),
     ];
   });
 
