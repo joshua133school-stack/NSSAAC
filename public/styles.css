@@ -637,6 +637,8 @@ textarea { resize: vertical; }
 #next-btn.fq-hidden { display: none; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; }
+/* a .chips reason-set with [hidden] must actually hide (flex would override it) */
+.reason-set[hidden] { display: none; }
 .chip {
   font-family: var(--sans);
   font-size: 0.85rem;
