@@ -494,6 +494,7 @@
       guess: null,
       confidence: 5,
       reasonTags: [],
+      reasonOther: '',
     };
 
     // progress (clamped so it can never read past the total)
@@ -515,6 +516,7 @@
     $$('#reason-tags .reason-set').forEach((s) => { s.hidden = true; });
     $('#confidence').value = 5;
     $('#confidence-out').textContent = '5';
+    $('#reason-other').value = '';
     $('#followup').hidden = true;
     resetFollowup();
   }
@@ -555,6 +557,7 @@
 
     state.current.confidence = Number($('#confidence').value);
     syncReasonTags();
+    state.current.reasonOther = $('#reason-other').value.trim();
     state.responses.push(state.current);
 
     state.index += 1;

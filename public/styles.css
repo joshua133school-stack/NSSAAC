@@ -639,6 +639,12 @@ textarea { resize: vertical; }
 .chips { display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; }
 /* a .chips reason-set with [hidden] must actually hide (flex would override it) */
 .reason-set[hidden] { display: none; }
+.reason-other {
+  width: 100%;
+  margin-top: 0.7rem;
+  font-size: 0.95rem;
+  padding: 0.65rem 0.85rem;
+}
 .chip {
   font-family: var(--sans);
   font-size: 0.85rem;

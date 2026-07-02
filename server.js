@@ -148,6 +148,7 @@ const CSV_COLUMNS = [
   'is_correct',
   'confidence',
   'reason_tags',
+  'reason_other',
 ];
 const CSV_HEADER = CSV_COLUMNS.join(',');
 
@@ -275,6 +276,7 @@ app.post('/api/submit', async (req, res) => {
       isCorrect,
       r.confidence,
       flat(r.reasonTags),
+      r.reasonOther,
     ];
   });
 
