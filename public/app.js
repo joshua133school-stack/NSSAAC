@@ -442,7 +442,6 @@
 
     $('#next-btn').addEventListener('click', nextPhoto);
 
-    setupMarking();
     setupFollowupFlow();
   }
 
@@ -469,7 +468,6 @@
     followupState.step = -1;
     followupState.steps.forEach((s) => s.classList.remove('fq-revealed', 'fq-active'));
     $('#next-btn').classList.add('fq-hidden');
-    $('#photo-frame').classList.remove('marking');
   }
 
   function revealFollowupStep(i) {
@@ -484,109 +482,8 @@
 
     const isLast = i === steps.length - 1;
     $('#next-btn').classList.toggle('fq-hidden', !isLast);
-    $('#photo-frame').classList.toggle('marking', isLast); // draw at the highlight step
 
     setTimeout(() => steps[i].scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
-  }
-
-  // ---- highlight ("mark the weird part") canvas ----------------------------
-
-  const mark = { canvas: null, ctx: null, drawing: false, hasDrawn: false };
-
-  function setupMarking() {
-    mark.canvas = $('#mark-canvas');
-    mark.ctx = mark.canvas.getContext('2d');
-
-    const pos = (e) => {
-      const r = mark.canvas.getBoundingClientRect();
-      return { x: e.clientX - r.left, y: e.clientY - r.top };
-    };
-    const start = (e) => {
-      if (!$('#photo-frame').classList.contains('marking')) return;
-      mark.drawing = true;
-      mark.hasDrawn = true;
-      const p = pos(e);
-      mark.ctx.beginPath();
-      mark.ctx.moveTo(p.x, p.y);
-      e.preventDefault();
-    };
-    const move = (e) => {
-      if (!mark.drawing) return;
-      const p = pos(e);
-      const w = Math.max(10, mark.canvas.width * 0.035);
-      mark.ctx.lineWidth = w;
-      mark.ctx.lineCap = 'round';
-      mark.ctx.lineJoin = 'round';
-      mark.ctx.strokeStyle = 'rgba(95, 95, 102, 0.62)'; // opaque-ish grey highlight
-      mark.ctx.lineTo(p.x, p.y);
-      mark.ctx.stroke();
-      e.preventDefault();
-    };
-    const end = () => { mark.drawing = false; };
-
-    mark.canvas.addEventListener('pointerdown', start);
-    window.addEventListener('pointermove', move);
-    window.addEventListener('pointerup', end);
-
-    $('#mark-clear').addEventListener('click', clearMarks);
-  }
-
-  function sizeMarkCanvas() {
-    const frame = $('#photo-frame');
-    const w = frame.clientWidth;
-    const h = frame.clientHeight;
-    if (!w || !h) return;
-    // resizing the canvas also clears it
-    mark.canvas.width = w;
-    mark.canvas.height = h;
-    mark.hasDrawn = false;
-  }
-
-  function clearMarks() {
-    if (!mark.ctx) return;
-    sizeMarkCanvas();
-    mark.ctx.clearRect(0, 0, mark.canvas.width, mark.canvas.height);
-    mark.hasDrawn = false;
-  }
-
-  /**
-   * Flatten the photo + the highlight into one small JPEG and return it as
-   * base64 (no data-URL prefix), or null if the participant drew nothing.
-   */
-  function buildAnnotation() {
-    if (!mark.hasDrawn) return null;
-    const img = $('#quiz-image');
-    const cw = mark.canvas.width;
-    const ch = mark.canvas.height;
-    if (!cw || !ch || !img.naturalWidth) return null;
-
-    const out = document.createElement('canvas');
-    out.width = cw;
-    out.height = ch;
-    const ctx = out.getContext('2d');
-
-    // replicate object-fit: cover so the marks line up with the photo
-    const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
-    const dw = img.naturalWidth * scale;
-    const dh = img.naturalHeight * scale;
-    ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
-    ctx.drawImage(mark.canvas, 0, 0);
-
-    // downscale so the spreadsheet stays light
-    const maxDim = 480;
-    const s = Math.min(1, maxDim / Math.max(cw, ch));
-    let final = out;
-    if (s < 1) {
-      final = document.createElement('canvas');
-      final.width = Math.round(cw * s);
-      final.height = Math.round(ch * s);
-      final.getContext('2d').drawImage(out, 0, 0, final.width, final.height);
-    }
-    try {
-      return final.toDataURL('image/jpeg', 0.7).split(',')[1] || null;
-    } catch (e) {
-      return null; // tainted canvas (shouldn't happen for same-origin images)
-    }
   }
 
   function renderPhoto() {
@@ -597,7 +494,6 @@
       guess: null,
       confidence: 5,
       reasonTags: [],
-      annotation: null,
     };
 
     // progress (clamped so it can never read past the total)
@@ -621,10 +517,6 @@
     $('#confidence-out').textContent = '5';
     $('#followup').hidden = true;
     resetFollowup();
-
-    // reset the highlight layer for the new photo
-    frame.classList.remove('marking');
-    clearMarks();
   }
 
   function selectGuess(btn) {
@@ -663,7 +555,6 @@
 
     state.current.confidence = Number($('#confidence').value);
     syncReasonTags();
-    state.current.annotation = buildAnnotation();
     state.responses.push(state.current);
 
     state.index += 1;
